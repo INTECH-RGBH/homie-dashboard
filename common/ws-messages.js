@@ -36,7 +36,11 @@ export function generateMessage (options) {
     case MESSAGE_TYPES.EVENT:
       return JSON.stringify([MESSAGE_TYPES.EVENT, options.event, options.value])
     case MESSAGE_TYPES.REQUEST:
-      return JSON.stringify([MESSAGE_TYPES.REQUEST, uuid(), options.method, options.parameters])
+      const id = uuid()
+      return {
+        id,
+        text: JSON.stringify([MESSAGE_TYPES.REQUEST, id, options.method, options.parameters])
+      }
     case MESSAGE_TYPES.RESPONSE:
       return JSON.stringify([MESSAGE_TYPES.RESPONSE, options.id, options.value])
   }

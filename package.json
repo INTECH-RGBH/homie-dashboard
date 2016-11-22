@@ -38,6 +38,7 @@
     "bulma": "^0.2.3",
     "copy-webpack-plugin": "^4.0.0",
     "eva.js": "^1.1.1",
+    "eventemitter3": "^2.0.2",
     "font-awesome": "^4.7.0",
     "node-sass": "^3.11.3",
     "nodemon": "^1.11.0",

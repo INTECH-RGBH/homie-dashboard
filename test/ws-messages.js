@@ -12,7 +12,7 @@ test('generate and parse an event', t => {
 test('generate and parse a request', t => {
   const options = { type: MESSAGE_TYPES.REQUEST, method: 'getStats', parameters: { timespan: 'all' } }
   const message = generateMessage(options)
-  const parsed = parseMessage(message)
+  const parsed = parseMessage(message.text)
   t.is(parsed.type, options.type)
   t.is(parsed.method, options.method)
   t.deepEqual(parsed.parameters, options.parameters)
