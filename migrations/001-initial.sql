@@ -64,7 +64,7 @@ CREATE TABLE property_history (
 
   CONSTRAINT property_history_property_id_fk FOREIGN KEY(property_id) REFERENCES properties(id),
   CONSTRAINT property_history_value_ck CHECK(value <> ''),
-  CONSTRAINT property_history_date_ck CHECK(length(date) = 23)
+  CONSTRAINT property_history_date_ck CHECK(length(date) = 24)
 );
 
 CREATE TABLE IFTTT (
@@ -85,10 +85,19 @@ CREATE TABLE settings (
   value TEXT NOT NULL
 );
 
+CREATE TABLE auth_tokens (
+  token TEXT PRIMARY KEY NOT NULL,
+  last_activity TEXT NOT NULL, -- SQLite DATETIME,
+
+  CONSTRAINT auth_tokens_token_ck CHECK(length(token) = 36),
+  CONSTRAINT auth_tokens_last_activity_ck CHECK(length(last_activity) = 24)
+);
+
 --------------------------------------------------------------------------------
 -- Down
 --------------------------------------------------------------------------------
 
+DROP TABLE auth_tokens;
 DROP TABLE settings;
 DROP TABLE IFTTT;
 DROP TABLE property_history;

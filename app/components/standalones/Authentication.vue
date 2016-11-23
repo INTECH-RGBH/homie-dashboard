@@ -20,7 +20,7 @@
 </template>
 
 <script>
-import {mapActions} from 'eva.js'
+import {mapActions, mapState} from 'eva.js'
 
 export default {
   data () {
@@ -29,10 +29,13 @@ export default {
       isWrongPassword: false
     }
   },
+  computed: {
+    ...mapState('intendedRoute')
+  },
   methods: {
     async send () {
       const success = await this.tryAuth(this.password)
-      if (success) this.$router.replace('/')
+      if (success) this.$router.replace(this.intendedRoute)
       else this.isWrongPassword = true
     },
     ...mapActions(['tryAuth'])

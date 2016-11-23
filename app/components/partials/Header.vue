@@ -26,6 +26,14 @@
                 <span>Ajouter un périphérique</span>
               </a>
             </span>
+            <span class="nav-item">
+              <a class="button is-light is-outlined" @click.prevent="logout">
+                <span class="icon">
+                  <i class="fa fa-sign-out"></i>
+                </span>
+                <span>Se déconnecter</span>
+              </a>
+            </span>
           </div>
         </div>
       </header>
@@ -56,7 +64,7 @@
 </template>
 
 <script>
-import {mapState} from 'eva.js'
+import {mapState, mapActions} from 'eva.js'
 
 export default {
   data () {
@@ -73,7 +81,8 @@ export default {
     },
     openConfiguratorPopup () {
       window.open('/ajout-peripherique', '', 'width=500, height=300')
-    }
+    },
+    ...mapActions(['logout'])
   }
 }
 </script>

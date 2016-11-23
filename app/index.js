@@ -9,6 +9,8 @@ import Devices from './components/pages/Devices'
 import Authentication from './components/standalones/Authentication'
 import AddDevice from './components/standalones/AddDevice'
 
+import {SET_INTENDED_ROUTE} from './store/app'
+
 const app = new EVA({ mode: 'history' })
 
 initializeStore(app)
@@ -24,6 +26,7 @@ app.router(route => [
 ])
 
 app.$router.beforeEach((to, from, next) => {
+  if (to.path !== '/authentification') app.$store.commit(SET_INTENDED_ROUTE, to.path)
   if (!app.$store.state.isAuthentified && to.path !== '/authentification') return next('/authentification')
   if (app.$store.state.isAuthentified && to.path === '/authentification') return next('/')
 
