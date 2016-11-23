@@ -21,3 +21,12 @@ export async function checkToken ({ db }, token) {
 
   return record !== undefined
 }
+
+export async function deleteToken ({ db }, token) {
+  const result = await db.run(
+    'DELETE FROM auth_tokens WHERE token = ?',
+    token
+  )
+
+  return result.changes === 1
+}

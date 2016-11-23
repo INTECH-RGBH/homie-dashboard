@@ -4,22 +4,28 @@ export default class WebSocket extends EventEmitter {
   constructor (url) {
     super()
 
-    const startWebsocket = () => {
-      this.ws = new window.WebSocket(url)
-      this.ws.onopen = (event) => {
-        this.emit('open', event)
-      }
-      this.ws.onclose = (event) => {
-        this.emit('close', event)
+    this.url = url
+  }
 
-        setTimeout(startWebsocket, 2000)
-      }
-      this.ws.onmessage = (event) => {
-        this.emit('message', event.data)
-      }
+  start () {
+    this.stopped = false
+    this.ws = new window.WebSocket(this.url)
+    this.ws.onopen = (event) => {
+      this.emit('open', event)
     }
+    this.ws.onclose = (event) => {
+      this.emit('close', event)
 
-    startWebsocket()
+      if (!this.stopped) setTimeout(this.start.bind(this), 2000)
+    }
+    this.ws.onmessage = (event) => {
+      this.emit('message', event.data)
+    }
+  }
+
+  stop () {
+    if (this.ws) this.ws.close()
+    this.stopped = true
   }
 
   send (message) {

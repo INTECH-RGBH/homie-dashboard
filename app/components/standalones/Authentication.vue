@@ -2,6 +2,9 @@
   <section class="hero is-primary is-bold is-fullheight">
     <div class="hero-body">
       <div class="container has-text-centered">
+        <figure class="image is-64x64">
+          <img src="../../assets/images/logo_white.png" alt="Logo">
+        </figure>
         <h1 class="title">
           Authentifiez-vous.
         </h1>
@@ -34,14 +37,17 @@ export default {
   },
   methods: {
     async send () {
-      const success = await this.tryAuth(this.password)
-      if (success) this.$router.replace(this.intendedRoute)
-      else this.isWrongPassword = true
+      const success = await this.login(this.password) // redirected if success
+      if (!success) this.isWrongPassword = true
     },
-    ...mapActions(['tryAuth'])
+    ...mapActions(['login'])
   }
 }
 </script>
 
-<style lang="sass">
+<style lang="sass" scoped>
+  .image {
+    margin: auto;
+    margin-bottom: 10px;
+  }
 </style>

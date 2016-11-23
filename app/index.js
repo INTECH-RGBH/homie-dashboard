@@ -1,15 +1,14 @@
 import EVA from 'eva.js'
+import cookie from 'cookie'
 import App from './components/App'
 
-import initializeStore from './store/app'
+import initializeStore, {SET_INTENDED_ROUTE, SET_IS_AUTHENTIFIED} from './store/app'
 
 import Overview from './components/pages/Overview'
 import Devices from './components/pages/Devices'
 
 import Authentication from './components/standalones/Authentication'
 import AddDevice from './components/standalones/AddDevice'
-
-import {SET_INTENDED_ROUTE} from './store/app'
 
 const app = new EVA({ mode: 'history' })
 
@@ -26,9 +25,21 @@ app.router(route => [
 ])
 
 app.$router.beforeEach((to, from, next) => {
-  if (to.path !== '/authentification') app.$store.commit(SET_INTENDED_ROUTE, to.path)
-  if (!app.$store.state.isAuthentified && to.path !== '/authentification') return next('/authentification')
-  if (app.$store.state.isAuthentified && to.path === '/authentification') return next('/')
+  if (app.$store.state.isAuthentified) {
+    if (to.path === '/authentification') return next('/')
+  } else {
+    if (cookie.parse(document.cookie).hasOwnProperty('ACCESSTOKEN_SET')) {
+      app.$store.commit(SET_IS_AUTHENTIFIED, true)
+      app.$store.dispatch('startWs')
+      if (to.path === '/authentification') return next('/')
+      else return next()
+    }
+
+    if (to.path !== '/authentification') {
+      app.$store.commit(SET_INTENDED_ROUTE, to.path)
+      return next('/authentification')
+    }
+  }
 
   next()
 })
