@@ -5,30 +5,15 @@ const BASE_TOPIC = 'homie'
 const STATS_INTERVAL_IN_SECONDS = 10
 const DEVICES = [
   {
-    id: 'switchdevice',
-    name: 'Objet prise',
+    id: 'temperaturedevice',
+    name: 'Température',
     fw: { name: 'firmware', version: '1.0.0' },
     nodes: [
       {
-        id: 'switchnode',
-        type: 'switch',
+        id: 'temperaturenode',
+        type: 'temperature',
         properties: [
-          { id: 'on', settable: true }
-        ]
-      }
-    ]
-  },
-  {
-    id: 'lightdevice',
-    name: 'Objet lumière',
-    fw: { name: 'firmware', version: '1.0.0' },
-    nodes: [
-      {
-        id: 'lightnode',
-        type: 'light',
-        properties: [
-          { id: 'intensity', settable: true },
-          { id: 'color', setable: true }
+          { id: 'degrees', settable: false }
         ]
       }
     ]
@@ -84,5 +69,13 @@ const sendStats = function (device) {
 }
 
 const sendAllStats = function () {
-  for (let device of DEVICES) sendStats(device)
+  for (let device of DEVICES) {
+    sendStats(device)
+
+    device.nodes.forEach(function (node) {
+      if (node.type === 'temperature') {
+        client.publish(`${BASE_TOPIC}/${device.id}/${node.id}/degrees`, (Math.floor(Math.random() * 30) + 0).toString(), qos1Retained)
+      }
+    })
+  }
 }
