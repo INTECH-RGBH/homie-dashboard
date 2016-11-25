@@ -21,3 +21,6 @@ script:
   - if [[ "$SIDE" == "server" ]]; then npm run server-test; fi
   - if [[ "$SIDE" == "server" ]]; then npm run server-build; fi
   - if [[ "$SIDE" == "app" ]]; then npm run app-build; fi
+
+after_success:
+  - if [[ "$SIDE" == "server" ]]; then ./node_modules/.bin/nyc report --reporter=text-lcov | ./node_modules/.bin/coveralls; fi

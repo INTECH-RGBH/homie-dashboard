@@ -12,7 +12,13 @@
   "babel": {
     "plugins": [
       "transform-es2015-modules-commonjs"
-    ]
+    ],
+    "ignore": "test/**/*.js",
+    "env": {
+      "development": {
+        "sourceMaps": "inline"
+      }
+    }
   },
   "bugs": "https://github.com/INTECH-RGBH/homie-dashboard/issues",
   "contributors": [
@@ -40,11 +46,14 @@
     "babel-cli": "^6.18.0",
     "babel-plugin-transform-es2015-modules-commonjs": "^6.18.0",
     "bulma": "^0.2.3",
+    "coveralls": "^2.11.15",
+    "cross-env": "^3.1.3",
     "eva.js": "^1.1.1",
     "eventemitter3": "^2.0.2",
     "font-awesome": "^4.7.0",
     "node-sass": "^3.11.3",
     "nodemon": "^1.11.0",
+    "nyc": "^10.0.0",
     "sass-loader": "^4.0.2",
     "shx": "^0.2.0",
     "snazzy": "^5.0.0",
@@ -70,13 +79,13 @@
     "url": "https://github.com/INTECH-RGBH/homie-dashboard.git"
   },
   "scripts": {
-    "app-build": "vbuild",
+    "app-build": "cross-env BABEL_ENV=production vbuild",
     "app-dev": "vbuild --dev",
     "emulator-start": "nodemon --watch emulator emulator/index.js --exec babel-node --harmony-async-await | bunyan",
-    "server-build": "babel server/ -d dist-server/src/ && shx cp package.json dist-server/",
+    "server-build": "cross-env BABEL_ENV=production babel server/ -d dist-server/src/ && shx cp package.json dist-server/",
     "server-dev": "nodemon --watch server server/index.js --exec babel-node --harmony-async-await | bunyan",
     "server-lint": "standard server/**/*.js | snazzy",
     "server-serve": "node --harmony-async-await src/index.js",
-    "server-test": "ava"
+    "server-test": "nyc ava"
   }
 }

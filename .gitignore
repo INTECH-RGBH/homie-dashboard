@@ -11,3 +11,7 @@ dist-app
 
 # Dependency directories
 node_modules
+
+# Coverage
+coverage
+.nyc_output
