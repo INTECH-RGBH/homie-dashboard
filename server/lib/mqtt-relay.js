@@ -1,14 +1,15 @@
 import {EventEmitter} from 'events'
 import homieTopicParser, {TOPIC_TYPES} from './homie-topic-parser'
+import Device from './infrastructure/device'
+import Node from './infrastructure/node'
+import Property from './infrastructure/property'
 
 export default class MqttRelay extends EventEmitter {
-  constructor ({ $deps, mqttClient }) {
+  constructor ({ $deps, mqttClient, infrastructure }) {
     super()
     this.$deps = $deps
     this.mqttClient = mqttClient
-
-    this.completeDevices = {}
-    this.incompleteDevices = {}
+    this.infrastructure = infrastructure
 
     this.mqttClient.on('message', (topic, value) => {
       const message = homieTopicParser.parse(topic, value.toString())
@@ -17,101 +18,99 @@ export default class MqttRelay extends EventEmitter {
       /* Handle device properties */
 
       if (message.type === TOPIC_TYPES.DEVICE_PROPERTY) {
-        // if the device already sent its device properties
-        if (this.completeDevices.hasOwnProperty(message.deviceId)) {
-          let value
-          switch (message.property) {
-            case 'stats/signal':
-              value = parseInt(message.value, 10)
-              break
-            case 'stats/uptime':
-              value = parseInt(message.value, 10)
-              break
-            case 'online':
-              value = message.value === 'true'
-              this.completeDevices[message.deviceId].id = message.deviceId
-              this.completeDevices[message.deviceId].state.online = value
-              delete this.completeDevices[message.deviceId].incompleteNodes
-              this.emit('deviceReady', this.completeDevices[message.deviceId])
-              return
-          }
-
-          return this.emit('devicePropertyUpdate', {
-            deviceId: message.deviceId,
-            property: message.property,
-            value
+        let device
+        if (!this.infrastructure.hasDevice(message.deviceId)) {
+          device = new Device()
+          device.once('valid', () => {
+            this.emit('device', device)
           })
-        } else {
-          if (!this.incompleteDevices[message.deviceId]) this.incompleteDevices[message.deviceId] = { stats: {}, fw: {} }
-          const device = this.incompleteDevices[message.deviceId]
-          switch (message.property) {
-            case 'name':
-              device.name = message.value
-              return
-            case 'ip':
-              device.ip = message.value
-              return
-            case 'mac':
-              device.mac = message.value
-              return
-            case 'stats/signal':
-              device.stats.signal = parseInt(message.value, 10)
-              return
-            case 'stats/uptime':
-              device.stats.uptime = parseInt(message.value, 10)
-              return
-            case 'stats/interval':
-              device.stats.interval = parseInt(message.value, 10)
-              return
-            case 'fw/name':
-              device.fw.name = message.value
-              return
-            case 'fw/version':
-              device.fw.version = message.value
-              return
-            case 'fw/checksum':
-              device.fw.checksum = message.value
-              return
-            case 'implementation': // end of device properties
-              device.implementation = message.value
-              this.completeDevices[message.deviceId] = { state: device, incompleteNodes: {}, completeNodes: {} }
-              delete this.incompleteDevices[message.deviceId]
-              return
-          }
+          device.id = message.deviceId
+          this.infrastructure.addDevice(device)
+        } else device = this.infrastructure.getDevice(message.deviceId)
+
+        switch (message.property) {
+          case 'name':
+            device.name = message.value
+            return
+          case 'localip':
+            device.localIp = message.value
+            return
+          case 'mac':
+            device.mac = message.value
+            return
+          case 'stats/signal':
+            device.setStatProperty('signal', parseInt(message.value, 10))
+            return
+          case 'stats/uptime':
+            device.setStatProperty('uptime', parseInt(message.value, 10))
+            return
+          case 'stats/interval':
+            device.setStatProperty('interval', parseInt(message.value, 10))
+            return
+          case 'fw/name':
+            device.setFirmwareProperty('name', message.value)
+            return
+          case 'fw/version':
+            device.setFirmwareProperty('version', message.value)
+            return
+          case 'fw/checksum':
+            device.setFirmwareProperty('checksum', message.value)
+            return
+          case 'implementation':
+            device.implementation = message.value
+            return
+          case 'online':
+            device.online = message.value === 'true'
+            return
         }
       }
 
-      if (!this.completeDevices.hasOwnProperty(message.deviceId)) return
+      if (!this.infrastructure.hasDevice(message.deviceId)) return
+      const device = this.infrastructure.getDevice(message.deviceId)
 
       /* Handle node special properties */
 
       if (message.type === TOPIC_TYPES.NODE_SPECIAL_PROPERTY) {
-        if (!this.completeDevices[message.deviceId].incompleteNodes[message.nodeId]) this.completeDevices[message.deviceId].incompleteNodes[message.nodeId] = { id: message.nodeId }
-        const node = this.completeDevices[message.deviceId].incompleteNodes[message.nodeId]
+        let node
+        if (!device.hasNode(message.nodeId)) {
+          node = new Node()
+          node.once('valid', () => {
+            this.emit('node', node)
+          })
+          node.device = device
+          node.id = message.nodeId
+          device.addNode(node)
+        } else node = device.getNode(message.nodeId)
 
         switch (message.property) {
           case 'type':
             node.type = message.value
             return
           case 'properties':
-            node.properties = message.value
-            this.completeDevices[message.deviceId].completeNodes[node.id] = node
-            delete this.completeDevices[message.deviceId].incompleteNodes[node.id]
+            node.propertiesDefinition = message.value
             return
         }
       }
 
-      if (!this.completeDevices[message.deviceId].completeNodes.hasOwnProperty(message.nodeId)) return
+      if (!device.hasNode(message.nodeId)) return
+      const node = device.getNode(message.nodeId)
 
       /* Handle node properties */
 
       if (message.type === TOPIC_TYPES.NODE_PROPERTY) {
-        this.emit('nodePropertyUpdate', {
-          deviceId: message.deviceId,
-          nodeId: message.nodeId,
-          property: message.property,
-          value: message.value
-        })
+        let property
+        if (!node.hasProperty(message.property)) {
+          property = new Property()
+          property.once('valid', () => {
+            this.emit('property', property)
+          })
+          property.node = node
+          property.id = message.property
+          node.addProperty(property)
+        } else property = node.getProperty(message.property)
+
+        property.value = message.value
+        return
       }
     })
   }

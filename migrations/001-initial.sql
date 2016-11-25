@@ -6,7 +6,7 @@ CREATE TABLE devices (
   id TEXT PRIMARY KEY NOT NULL,
   name TEXT NOT NULL,
   online INTEGER NOT NULL, -- SQLite BOOLEAN
-  ip TEXT NOT NULL,
+  local_ip TEXT NOT NULL,
   mac TEXT NOT NULL,
   stats_signal INTEGER,
   stats_uptime INTEGER NOT NULL,
@@ -15,12 +15,11 @@ CREATE TABLE devices (
   fw_version TEXT NOT NULL,
   fw_checksum TEXT NOT NULL,
   implementation TEXT NOT NULL,
-  added INTEGER NOT NULL, -- SQLite BOOLEAN
 
   CONSTRAINT devices_id_ck CHECK(id <> ''),
   CONSTRAINT devices_name_ck CHECK(name <> ''),
   CONSTRAINT devices_online_ck CHECK (online IN (0, 1)),
-  CONSTRAINT devices_ip_ck CHECK(length(ip) >= 7 AND length(ip) <= 15),
+  CONSTRAINT devices_local_ip_ck CHECK(length(local_ip) >= 7 AND length(local_ip) <= 15),
   CONSTRAINT devices_mac_ck CHECK(length(mac) = 17),
   CONSTRAINT devices_stats_signal_ck CHECK(stats_signal >= 0 AND stats_signal <= 100),
   CONSTRAINT devices_stats_uptime_ck CHECK(stats_uptime >= 0),
@@ -28,8 +27,7 @@ CREATE TABLE devices (
   CONSTRAINT devices_fw_name_ck CHECK(fw_name <> ''),
   CONSTRAINT devices_fw_version_ck CHECK(fw_version <> ''),
   CONSTRAINT devices_fw_checksum_ck CHECK(fw_checksum <> ''),
-  CONSTRAINT devices_implementation_ck CHECK(implementation <> ''),
-  CONSTRAINT devices_added_ck CHECK (added IN (0, 1))
+  CONSTRAINT devices_implementation_ck CHECK(implementation <> '')
 );
 
 CREATE TABLE nodes (

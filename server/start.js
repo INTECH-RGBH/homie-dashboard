@@ -1,26 +1,27 @@
+import throttle from 'lodash.throttle'
 import createMqttClient from './lib/mqtt-client'
 import Client from './lib/client'
 import MqttRelay from './lib/mqtt-relay'
+import infrastructure from './lib/infrastructure/infrastructure'
+import {syncInfrastructure, getAllDevices} from './services/database'
 
-export default function start ($deps) {
+const UPDATE_THROTTLE = 200
+
+export default async function start ($deps) {
   const mqttClient = createMqttClient(`mqtt://${$deps.settings.mqtt.host}:${$deps.settings.mqtt.port}`)
   mqttClient.on('connect', function onConnect () {
     $deps.log.info('connected to broker')
     mqttClient.subscribe('homie/#', { qos: 1 })
   })
 
-  const mqttRelay = new MqttRelay({ $deps, mqttClient })
-  mqttRelay.on('deviceReady', function (device) {
-    $deps.log.info('device ready', device)
-  })
+  await getAllDevices($deps, infrastructure)
 
-  mqttRelay.on('devicePropertyUpdate', function (property) {
-    $deps.log.info('device property update', property)
-  })
+  const mqttRelay = new MqttRelay({ $deps, mqttClient, infrastructure })
 
-  mqttRelay.on('nodePropertyUpdate', function (property) {
-    $deps.log.info('node property update', property)
-  })
+  infrastructure.on('update', throttle(async () => {
+    console.log('syncing database')
+    await syncInfrastructure($deps, infrastructure)
+  }, UPDATE_THROTTLE))
 
   const clients = []
   $deps.wss.on('connection', function onConnection (ws) {
