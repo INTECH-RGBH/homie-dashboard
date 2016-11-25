@@ -1,17 +1,20 @@
 import WebSocket from '../lib/websocket'
 import {login, logout} from '../services/api'
 import {parseMessage, MESSAGE_TYPES} from '../../common/ws-messages'
+import {INFRASTRUCTURE_UPDATE} from '../../common/events'
 
 export const SET_IS_CONNECTED = 'SET_IS_CONNECTED'
 export const SET_IS_AUTHENTIFIED = 'SET_IS_AUTHENTIFIED'
 export const SET_INTENDED_ROUTE = 'SET_INTENDED_ROUTE'
+export const SET_INFRASTRUCTURE = 'SET_INFRASTRUCTURE'
 
 export default function initializeStore (app) {
   app.model({
     state: {
       isConnected: false,
       isAuthentified: false,
-      intendedRoute: '/'
+      intendedRoute: '/',
+      infrastructure: {}
     },
     mutations: {
       [SET_IS_CONNECTED] (state, connected) {
@@ -22,6 +25,9 @@ export default function initializeStore (app) {
       },
       [SET_INTENDED_ROUTE] (state, route) {
         state.intendedRoute = route
+      },
+      [SET_INFRASTRUCTURE] (state, infrastructure) {
+        state.infrastructure = infrastructure
       }
     },
     actions: {
@@ -63,6 +69,9 @@ export default function initializeStore (app) {
     if (message.type !== MESSAGE_TYPES.EVENT) return
 
     switch (message.event) {
+      case INFRASTRUCTURE_UPDATE:
+        app.$store.commit(SET_INFRASTRUCTURE, message.value)
+        return
     }
   })
 }

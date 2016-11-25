@@ -13,6 +13,8 @@ export default class Node extends EventEmitter {
     this._properties = new Map()
 
     this.isValid = false
+
+    Object.seal(this)
   }
 
   hasProperty (propertyId) {
@@ -21,8 +23,8 @@ export default class Node extends EventEmitter {
 
   addProperty (property) {
     this._properties.set(property.id, property)
-    property.on('update', () => {
-      this.emit('update')
+    property.on('update', (update) => {
+      this.emit('update', update)
     })
     this._wasUpdated()
   }
@@ -36,13 +38,29 @@ export default class Node extends EventEmitter {
   }
 
   get device () { return this._device }
-  set device (val) { this._device = val; this._wasUpdated() }
+  set device (val) {
+    if (!val || this._device === val) return
+    this._device = val
+    this._wasUpdated()
+  }
   get id () { return this._id }
-  set id (val) { this._id = val; this._wasUpdated() }
+  set id (val) {
+    if (!val || this._id === val) return
+    this._id = val
+    this._wasUpdated()
+  }
   get type () { return this._type }
-  set type (val) { this._type = val; this._wasUpdated() }
+  set type (val) {
+    if (!val || this._type === val) return
+    this._type = val
+    this._wasUpdated()
+  }
   get propertiesDefinition () { return this._propertiesDefinition }
-  set propertiesDefinition (val) { this._propertiesDefinition = val; this._wasUpdated() }
+  set propertiesDefinition (val) {
+    if (!val || this._propertiesDefinition === val) return
+    this._propertiesDefinition = val
+    this._wasUpdated()
+  }
 
   _wasUpdated () {
     const wasValid = this.isValid
@@ -62,6 +80,19 @@ export default class Node extends EventEmitter {
       }
     }
 
-    this.emit('update')
+    if (this.isValid) this.emit('update', { type: 'property' })
+  }
+
+  toJSON () {
+    const representation = {}
+    representation.id = this.id
+    representation.type = this.type
+    representation.propertiesDefinition = this.propertiesDefinition
+    representation.properties = {}
+    for (const property of this.getProperties()) {
+      if (property.isValid) representation.properties[property.id] = property.toJSON()
+    }
+
+    return representation
   }
 }

@@ -10,14 +10,27 @@ export default class Property extends EventEmitter {
     this._value = null
 
     this.isValid = false
+
+    Object.seal(this)
   }
 
   get node () { return this._node }
-  set node (val) { this._node = val; this._wasUpdated() }
+  set node (val) {
+    if (!val || this._node === val) return
+    this._node = val
+    this._wasUpdated()
+  }
   get id () { return this._id }
-  set id (val) { this._id = val; this._wasUpdated() }
+  set id (val) {
+    if (!val || this._id === val) return
+    this._id = val
+    this._wasUpdated()
+  }
   get value () { return this._value }
-  set value (val) { this._value = val; this._wasUpdated() }
+  set value (val) {
+    if (!val || this._value === val) return
+    this._value = val; this._wasUpdated()
+  }
 
   _wasUpdated () {
     const wasValid = this.isValid
@@ -36,6 +49,14 @@ export default class Property extends EventEmitter {
       }
     }
 
-    this.emit('update')
+    if (this.isValid) this.emit('update', { type: 'property' })
+  }
+
+  toJSON () {
+    const representation = {}
+    representation.id = this.id
+    representation.value = this.value
+
+    return representation
   }
 }

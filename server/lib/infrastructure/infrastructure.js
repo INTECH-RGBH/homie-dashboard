@@ -5,6 +5,8 @@ class Infrastructure extends EventEmitter {
     super()
 
     this._devices = new Map()
+
+    Object.seal(this)
   }
 
   hasDevice (deviceId) {
@@ -13,8 +15,8 @@ class Infrastructure extends EventEmitter {
 
   addDevice (device) {
     this._devices.set(device.id, device)
-    device.on('update', () => {
-      this.emit('update')
+    device.on('update', (update) => {
+      this.emit('update', update)
     })
     this._wasUpdated()
   }
@@ -28,7 +30,16 @@ class Infrastructure extends EventEmitter {
   }
 
   _wasUpdated () {
-    this.emit('update')
+    this.emit('update', { type: 'infrastructure' })
+  }
+
+  toJSON () {
+    const representation = {}
+    for (const device of this.getDevices()) {
+      if (device.isValid) representation[device.id] = device.toJSON()
+    }
+
+    return representation
   }
 }
 

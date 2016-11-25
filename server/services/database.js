@@ -206,6 +206,7 @@ export async function getAllDevices ({ db }, infrastructure) {
     let node
     if (!device.hasNode(value['n.device_node_id'])) {
       node = new Node()
+      node.device = device
       node.id = value['n.device_node_id']
       node.type = value['n.type']
       node.propertiesDefinition = value['n.properties']
@@ -215,6 +216,7 @@ export async function getAllDevices ({ db }, infrastructure) {
     let property
     if (!node.hasProperty(value['p.node_property_id'])) {
       property = new Property()
+      property.node = node
       property.id = value['p.node_property_id']
       property.value = value['h.value']
       node.addProperty(property)

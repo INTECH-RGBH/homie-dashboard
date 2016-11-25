@@ -24,6 +24,8 @@ export default class Device extends EventEmitter {
     this._nodes = new Map()
 
     this.isValid = false
+
+    Object.seal(this)
   }
 
   hasNode (nodeId) {
@@ -32,8 +34,8 @@ export default class Device extends EventEmitter {
 
   addNode (node) {
     this._nodes.set(node.id, node)
-    node.on('update', () => {
-      this.emit('update')
+    node.on('update', (update) => {
+      this.emit('update', update)
     })
     this._wasUpdated()
   }
@@ -47,21 +49,53 @@ export default class Device extends EventEmitter {
   }
 
   get id () { return this._id }
-  set id (val) { this._id = val; this._wasUpdated() }
+  set id (val) {
+    if (!val || this._id === val) return
+    this._id = val
+    this._wasUpdated()
+  }
   get name () { return this._name }
-  set name (val) { this._name = val; this._wasUpdated() }
+  set name (val) {
+    if (!val || this._name === val) return
+    this._name = val
+    this._wasUpdated()
+  }
   get online () { return this._online }
-  set online (val) { this._online = val; this._wasUpdated() }
+  set online (val) {
+    if (!val || this._online === val) return
+    this._online = val
+    this._wasUpdated()
+  }
   get localIp () { return this._localIp }
-  set localIp (val) { this._localIp = val; this._wasUpdated() }
+  set localIp (val) {
+    if (!val || this._localIp === val) return
+    this._localIp = val
+    this._wasUpdated()
+  }
   get mac () { return this._mac }
-  set mac (val) { this._mac = val; this._wasUpdated() }
+  set mac (val) {
+    if (!val || this._mac === val) return
+    this._mac = val
+    this._wasUpdated()
+  }
   getStatProperty (property) { return this._stats.get(property) }
-  setStatProperty (property, value) { this._stats.set(property, value); this._wasUpdated() }
+  setStatProperty (property, value) {
+    if (!property || !value || this._stats.get(property) === value) return
+    this._stats.set(property, value)
+    this._wasUpdated()
+  }
   getFirmwareProperty (property) { return this._fw.get(property) }
-  setFirmwareProperty (property, value) { this._fw.set(property, value); this._wasUpdated() }
+  setFirmwareProperty (property, value) {
+    if (!property || !value || this._fw.get(property) === value) return
+    this._fw.set(property, value)
+    this._wasUpdated()
+  }
   get implementation () { return this._implementation }
-  set implementation (val) { this._implementation = val; this._wasUpdated() }
+  set implementation (val) {
+    if (!val || this._implementation === val) return
+    this._implementation = val
+    this._wasUpdated()
+  }
 
   _wasUpdated () {
     const wasValid = this.isValid
@@ -82,6 +116,31 @@ export default class Device extends EventEmitter {
 
     if (!wasValid && this.isValid) this.emit('valid')
 
-    this.emit('update')
+    if (this.isValid) this.emit('update', { type: 'device' })
+  }
+
+  toJSON () {
+    const representation = {}
+    representation.id = this.id
+    representation.name = this.name
+    representation.localIp = this.localIp
+    representation.mac = this.mac
+    representation.stats = {
+      signal: this.getStatProperty('signal'),
+      uptime: this.getStatProperty('uptime'),
+      interval: this.getStatProperty('interval')
+    }
+    representation.fw = {
+      name: this.getFirmwareProperty('name'),
+      version: this.getFirmwareProperty('version'),
+      checksum: this.getFirmwareProperty('checksum')
+    }
+    representation.implementation = this.implementation
+    representation.nodes = {}
+    for (const node of this.getNodes()) {
+      if (node.isValid) representation.nodes[node.id] = node.toJSON()
+    }
+
+    return representation
   }
 }
