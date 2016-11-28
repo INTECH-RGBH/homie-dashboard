@@ -35,7 +35,18 @@ export default {
     return {
       types: {
         'temperature': TemperatureDevice,
-        'light': LightDevice
+        'light': LightDevice,
+        'switch': SwitchDevice,
+        'humidity': HumidityDevice,
+        'shutters': ShuttersDevice,
+        'door': DoorDevice,
+        'window': WindowDevice,
+        'lock': LockDevice,
+        'heater': HeaterDevice,
+        'sound': SoundDevice,
+        'luminosity': LuminosityDevice,
+        'motion': MotionDevice,
+        'buzzer': BuzzerDevice
       }
     }
   },
