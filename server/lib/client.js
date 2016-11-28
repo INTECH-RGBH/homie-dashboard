@@ -8,6 +8,7 @@ export default class Client extends EventEmitter {
 
     this.$deps = opts.$deps
     this.ws = opts.ws
+    this.mqttClient = opts.mqttClient
 
     this.ws.on('message', data => {
       const message = parseMessage(data)
@@ -27,5 +28,16 @@ export default class Client extends EventEmitter {
     if (message.type !== MESSAGE_TYPES.REQUEST) return
 
     /* Handle requests */
+
+    if (message.method === 'setState') {
+      const deviceId = message.parameters.deviceId
+      const nodeId = message.parameters.nodeId
+      const property = message.parameters.property
+      const value = message.parameters.value
+
+      this.mqttClient.publish(`homie/${deviceId}/${nodeId}/${property}/set`, value, { qos: 1, retain: true })
+
+      this._sendResponse(message, true)
+    }
   }
 }

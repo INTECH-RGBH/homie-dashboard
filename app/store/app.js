@@ -1,6 +1,6 @@
 import WebSocket from '../lib/websocket'
 import {login, logout} from '../services/api'
-import {parseMessage, MESSAGE_TYPES} from '../../common/ws-messages'
+import {parseMessage, generateMessage, MESSAGE_TYPES} from '../../common/ws-messages'
 import {INFRASTRUCTURE_UPDATE} from '../../common/events'
 
 export const SET_IS_CONNECTED = 'SET_IS_CONNECTED'
@@ -52,6 +52,18 @@ export default function initializeStore (app) {
         }
 
         return success
+      },
+      setState ({commit}, opts) {
+        const message = generateMessage({
+          type: MESSAGE_TYPES.REQUEST,
+          method: 'setState',
+          parameters: {
+            deviceId: opts.deviceId,
+            nodeId: opts.nodeId,
+            property: opts.property,
+            value: opts.value
+          }})
+        ws.send(message)
       }
     }
   })
