@@ -4,7 +4,6 @@
       <img src="../../assets/images/icons/door/door-open.png" alt="" >
     </div>
     <div slot="main">
-      {{state.degrees.value}}
     </div>
   </card-device>
 </template>

@@ -34,8 +34,5 @@ export default{
 </script>
 
 <style lang="sass">
-    .card
-        margin-left: 10px
-        margin-top: 10px
-    
+
 </style>
