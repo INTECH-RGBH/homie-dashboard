@@ -12,11 +12,23 @@
 
 <script>
 import CardDevice from "./Card"
+import {mapActions} from "eva.js"
 
 export default {
-  props: ['state', 'deviceId', 'nodeId'],
+  props: ['state', 'deviceId', 'nodeId', ],
 
-  components:{CardDevice}
+  components:{CardDevice},
+
+  methods:{
+    changeTemp(){
+      this.setState({
+            deviceId: this.deviceId,
+            nodeId: this.nodeId,
+            property: "",
+            value: "1"})
+    },
+    ...mapActions(["setState"])
+  }
 }
 </script>
 
