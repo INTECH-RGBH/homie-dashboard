@@ -27,7 +27,7 @@
               </a>
             </span>
             <span class="nav-item">
-              <a class="button is-light is-outlined" @click.prevent="logout">
+              <a class="button is-primary is-inverted" @click.prevent="logout">
                 <span class="icon">
                   <i class="fa fa-sign-out"></i>
                 </span>
