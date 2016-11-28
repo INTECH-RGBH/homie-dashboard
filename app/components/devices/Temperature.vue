@@ -12,17 +12,11 @@
 
 <script>
 import CardDevice from "./Card"
-import {mapActions} from "eva.js"
 
 export default {
-  props: ['state', 'deviceId', 'nodeId', ],
+  props: ['state', 'deviceId', 'nodeId'],
 
-  components:{CardDevice},
-
-   mounted(){
-    //const canvas = this.$refs.canvas.getContext("2d")
-    
-  }
+  components:{CardDevice}
 }
 </script>
 
