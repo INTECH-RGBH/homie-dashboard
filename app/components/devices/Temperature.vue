@@ -5,7 +5,7 @@
       <!--<canvas ref="canvas"></canvas>-->
     </div>
     <div slot="main">
-      {{state.degrees ? state.degrees.value : ''}} 
+      {{state.degrees ? state.degrees.value : ''}} °C
     </div>
   </card-device>
 </template>
@@ -20,7 +20,7 @@ export default {
   components:{CardDevice},
 
    mounted(){
-    const canvas = this.$refs.canvas.getContext("2d")
+    //const canvas = this.$refs.canvas.getContext("2d")
     
   }
 }
