@@ -4,30 +4,18 @@
       <img src="../../assets/images/icons/temperature/thermometer.png" alt="" >
     </div>
     <div slot="main">
-      {{state.degrees.value}} 
+      {{state.degrees ? state.degrees.value : ''}} 
     </div>
   </card-device>
 </template>
 
 <script>
 import CardDevice from "./Card"
-import {mapActions} from "eva.js"
 
 export default {
-  props: ['state', 'deviceId', 'nodeId', ],
+  props: ['state', 'deviceId', 'nodeId'],
 
-  components:{CardDevice},
-
-  methods:{
-    changeTemp(){
-      this.setState({
-            deviceId: this.deviceId,
-            nodeId: this.nodeId,
-            property: "",
-            value: "1"})
-    },
-    ...mapActions(["setState"])
-  }
+  components:{CardDevice}
 }
 </script>
 
