@@ -4,6 +4,7 @@ yarn-error.log*
 
 # Databases
 *.db
+*.db-journal
 
 # Build
 dist-server
