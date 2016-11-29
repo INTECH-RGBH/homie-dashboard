@@ -9,15 +9,15 @@
     </div>
     <div slot="main">
       <a v-bind:class="[state.intensity && parseInt(state.intensity.value) === 0 ? 'button is-primary' : 'button']" @click="setIntensity(0)">0 %</a>
-          <a v-bind:class="[state.intensity && parseInt(state.intensity.value) === 50 ? 'button is-primary' : 'button']" @click="setIntensity(50)">50 %</a>
-          <a v-bind:class="[state.intensity && parseInt(state.intensity.value) === 100 ? 'button is-primary' : 'button']" @click="setIntensity(100)">100 %</a>
-      
-          <button v-if="state.color" class="button is-fullwidth" v-bind:style="rgbVar">Couleur Actuelle</button>
-          <button v-else class="button is-fullwidth">Couleur non définie</button>
-         
+      <a v-bind:class="[state.intensity && parseInt(state.intensity.value) === 50 ? 'button is-primary' : 'button']" @click="setIntensity(50)">50 %</a>
+      <a v-bind:class="[state.intensity && parseInt(state.intensity.value) === 100 ? 'button is-primary' : 'button']" @click="setIntensity(100)">100 %</a>
+      <br><br>
+      <button v-if="state.color" class="button is-fullwidth" v-bind:style="rgbVar">Couleur Actuelle</button>
+      <button v-else class="button is-fullwidth">Couleur non définie</button>
+      <br>
       <a class="button " style="background-color:rgb(255,0,127)" @click="changeColor('0,255,255')"> > </a>
-        <a class="button "style="background-color:rgb(255,255,0)" @click="changeColor('255,255,0')"> > </a>
-       <a class="button "style="background-color:rgb(255,255,255)" @click="changeColor('255,255,255')"> > </a>
+      <a class="button "style="background-color:rgb(255,255,0)" @click="changeColor('255,255,0')"> > </a>
+      <a class="button "style="background-color:rgb(255,255,255)" @click="changeColor('255,255,255')"> > </a>
       
     </div>
   </card-device>
