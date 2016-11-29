@@ -2,7 +2,7 @@ import bunyan from 'bunyan'
 import mqtt from 'mqtt'
 
 const BASE_TOPIC = 'homie'
-const STATS_INTERVAL_IN_SECONDS = 10
+const STATS_INTERVAL_IN_SECONDS = 3
 const DEVICES = [
   {
     id: 'temperaturedevice',
@@ -253,13 +253,13 @@ const sendAllStats = function () {
       } else if (node.type === 'humidity') {
         client.publish(`${BASE_TOPIC}/${device.id}/${node.id}/percentage`, (Math.floor(Math.random() * 100) + 0).toString(), qos1Retained)
       } else if (node.type === 'door' || node.type === 'window') {
-        client.publish(`${BASE_TOPIC}/${device.id}/${node.id}/open`, (Math.floor(Math.random() * 1) + 0) ? '1' : '0', qos1Retained)
+        client.publish(`${BASE_TOPIC}/${device.id}/${node.id}/open`, Math.random() < 0.5 ? '1' : '0', qos1Retained)
       } else if (node.type === 'sound') {
         client.publish(`${BASE_TOPIC}/${device.id}/${node.id}/intensity`, (Math.floor(Math.random() * 30) + 0).toString(), qos1Retained)
       } else if (node.type === 'luminosity') {
         client.publish(`${BASE_TOPIC}/${device.id}/${node.id}/lux`, (Math.floor(Math.random() * 30) + 0).toString(), qos1Retained)
       } else if (node.type === 'motion') {
-        client.publish(`${BASE_TOPIC}/${device.id}/${node.id}/motion`, (Math.floor(Math.random() * 1) + 0) ? '1' : '0', qos1Retained)
+        client.publish(`${BASE_TOPIC}/${device.id}/${node.id}/motion`, Math.random() < 0.5 ? '1' : '0', qos1Retained)
       }
     })
   }

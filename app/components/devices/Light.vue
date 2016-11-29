@@ -1,7 +1,9 @@
 <template>
   <card-device>
     <div slot="img">
-      <img src="../../assets/images/icons/door/door-open.png" alt="" >
+      <img v-if="state.on && state.on.value === '1'" src="../../assets/images/icons/light/on.png" alt="" >
+      <img v-else-if="state.on && state.on.value === '0'" src="../../assets/images/icons/light/off.png" alt="" >
+      <img v-else src="../../assets/images/icons/common/unknown.png" alt="" >
     </div>
     <div slot="main">
     </div>

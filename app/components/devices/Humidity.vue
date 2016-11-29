@@ -1,7 +1,7 @@
 <template>
   <card-device>
     <div slot="img">
-      <img src="../../assets/images/icons/door/door-open.png" alt="" >
+      <img src="../../assets/images/icons/humidity/drop.png" alt="" >
     </div>
     <div slot="main">
     </div>

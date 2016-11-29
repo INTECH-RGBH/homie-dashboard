@@ -1,9 +1,10 @@
 <template>
   <card-device>
     <div slot="img">
-      <img src="../../assets/images/icons/door/door-open.png" alt="" >
+      <img src="../../assets/images/icons/luminosity/sensor.png" alt="" >
     </div>
     <div slot="main">
+      {{state.lux ? state.lux.value : ''}} lx
     </div>
   </card-device>
 </template>

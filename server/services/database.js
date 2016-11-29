@@ -176,6 +176,7 @@ export async function getAllDevices ({ db }, infrastructure) {
       d.stats_uptime AS 'd.stats_uptime',
       d.stats_interval_in_seconds AS 'd.stats_interval_in_seconds',
       d.fw_name AS 'd.fw_name',
+      d.fw_version AS 'd.fw_version',
       d.fw_checksum AS 'd.fw_checksum',
       d.implementation AS 'd.implementation',
       n.device_node_id AS 'n.device_node_id',

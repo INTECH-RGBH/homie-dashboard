@@ -1,9 +1,10 @@
 <template>
   <card-device>
     <div slot="img">
-      <img src="../../assets/images/icons/door/door-open.png" alt="" >
+      <img src="../../assets/images/icons/sound/wave.png" alt="" >
     </div>
     <div slot="main">
+      {{state.intensity ? state.intensity.value : ''}} dB
     </div>
   </card-device>
 </template>
