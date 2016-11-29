@@ -15,7 +15,7 @@
       <button v-if="state.color" class="button is-fullwidth" v-bind:style="rgbVar">Couleur Actuelle</button>
       <button v-else class="button is-fullwidth">Couleur non définie</button>
       <br>
-      <a class="button " style="background-color:rgb(255,0,127)" @click="changeColor('0,255,255')"> > </a>
+      <a class="button " style="background-color:rgb(255,0,127)" @click="changeColor('255,0,127')"> > </a>
       <a class="button "style="background-color:rgb(255,255,0)" @click="changeColor('255,255,0')"> > </a>
       <a class="button "style="background-color:rgb(255,255,255)" @click="changeColor('255,255,255')"> > </a>
       

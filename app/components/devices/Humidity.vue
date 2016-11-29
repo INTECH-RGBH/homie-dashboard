@@ -4,7 +4,9 @@
       <img src="../../assets/images/icons/humidity/drop.png" alt="" >
     </div>
     <div slot="main">
-      <p v-if="state.percentage">{{state.percentage.value}} %</p>
+      <div class="has-text-centered">
+          <p v-if="state.percentage" class="title">{{state.percentage.value}} %</p>
+      </div>
     </div>
   </card-device>
 </template>
