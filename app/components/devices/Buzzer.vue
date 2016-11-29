@@ -1,8 +1,8 @@
 <template>
   <card-device>
     <div slot="img">
-      <img v-if="state.buzzing && state.buzzing.value === '1'" src="../../assets/images/icons/light/on.png" alt="" >
-      <img v-else-if="state.buzzing && state.buzzing.value === '0'" src="../../assets/images/icons/light/off.png" alt="" >
+      <img v-if="state.buzzing && state.buzzing.value === '1'" src="../../assets/images/icons/buzzer/on.png" alt="" >
+      <img v-else-if="state.buzzing && state.buzzing.value === '0'" src="../../assets/images/icons/buzzer/off.png" alt="" >
       <img v-else src="../../assets/images/icons/common/unknown.png" alt="" >
     </div>
     <div slot="main">

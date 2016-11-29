@@ -4,7 +4,7 @@
     <h2 class="subtitle">
       Tous les périphériques de votre maison
     </h2>
-    <div class="columns is-multiline">
+    <div class="columns is-multiline is-mobile">
       <template v-for = "device in infrastructure">
         <component v-for="node in device.nodes" :is="types[node.type]" :state = "node.properties" :deviceId = "device.id" :nodeId = "node.id"></component>
       </template>
