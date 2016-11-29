@@ -1,14 +1,23 @@
 <template>
-  <card-device>
+  <card-device :hasActions="true">
     <div slot="img">
       <img v-if = "state.open && state.open.value === '1'" src = "../../assets/images/icons/lock/open.png">
       <img v-else-if = "state.open && state.open.value === '0'" src = "../../assets/images/icons/lock/closed.png" alt ="">
       <img v-else src="../../assets/images/icons/common/unknown.png" alt="" >
     </div>
+
     <div slot="main">
-      <button class="button is-danger is-fullwidth" v-if="state.open && state.open.value === '1'" @click="turnLock(false)">Fermer</button>
-        <button class="button is-success is-fullwidth" v-else @click="turnLock(true)">Ouvrir</button>
+      <div class="has-text-centered">
+        <template v-if = "state.open">
+          <p class="title">{{ state.open.value === '1' ? 'Déverrouillé' : 'Verrouillé' }}</p>
+        </template>
+      </div>
     </div>
+
+    <template slot="footer">
+      <a href="" class="card-footer-item" v-if="state.open && state.open.value === '1'" @click.prevent="turnLock(false)">Fermer</a>
+      <a href="" class="card-footer-item" v-else @click.prevent="turnLock(true)">Ouvrir</a>
+    </template>
   </card-device>
 </template>
 

@@ -3,36 +3,31 @@
 <div class="card">
   <div class="card-image">
     <figure class="image is-256x256">
-
       <slot name="img"></slot>
-
-
     </figure>
   </div>
-  <div class="card-content">
-    <div class="media">
-      <div class="media-left">
-      </div>
-      <div class="media-content">
-        <p class="title is-5">
-          <slot name="main"></slot>
-        </p>
-      </div>
-    </div>
 
+  <div class="card-content">
     <div class="content">
-        <slot name="content"></slot>
+      <slot name="main"></slot>
     </div>
   </div>
+
+  <footer v-if="hasActions" class="card-footer">
+    <slot name="footer"></slot>
+  </footer>
 </div>
 </div>
 </template>
-<script>
-export default{
 
+<script>
+export default {
+  props: ['hasActions']
 }
 </script>
 
-<style lang="sass">
-
+<style lang="sass" scoped>
+  .card
+    height: 100%
+  
 </style>

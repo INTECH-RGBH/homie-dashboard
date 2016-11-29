@@ -6,14 +6,14 @@
       <img v-else src="../../assets/images/icons/common/unknown.png" alt="" >
     </div>
     <div slot="main">
-      <template v-if = "state.motion && state.motion.value === '1'">
-      Mouvement détecté
-      </template>
-      <template v-else-if = "state.motion && state.motion.value === '0'">
-        Aucun Mouvement
-      </template>
-      <template v-else>
-      </template>
+      <div class="has-text-centered">
+        <template v-if = "state.motion && state.motion.value === '1'">
+        <p class="title">Mouvement détecté</p>
+        </template>
+        <template v-else-if = "state.motion && state.motion.value === '0'">
+          <p class="title">Aucun mouvement</p>
+        </template>
+      </div>
     </div>
   </card-device>
 </template>

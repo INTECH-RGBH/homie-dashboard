@@ -4,11 +4,12 @@
       <img src="../../assets/images/icons/sound/wave.png" alt="" >
     </div>
     <div slot="main">
-      {{state.intensity ? state.intensity.value : ''}} dB
+        <div class="has-text-centered">
+          <p class="title">{{state.intensity ? state.intensity.value : ''}} dB</p>
+        </div>
     </div>
   </card-device>
 </template>
-
 <script>
 import CardDevice from "./Card"
 

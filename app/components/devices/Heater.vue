@@ -1,5 +1,5 @@
 <template>
-  <card-device>
+  <card-device :hasActions="true">
     <div slot="img">
       <img v-if="state.degrees && state.degrees.value === '0'" src="../../assets/images/icons/heater/off.png" alt="" >
       <img v-else-if="state.degrees && state.degrees.value === '10'" src="../../assets/images/icons/heater/anti-freeze.png" alt="" >
@@ -7,12 +7,21 @@
       <img v-else-if="state.degrees && state.degrees.value === '20'" src="../../assets/images/icons/heater/comfort.png" alt="" >
       <img v-else src="../../assets/images/icons/common/unknown.png" alt="" >
     </div>
+
     <div slot="main">
-      <button class="button is-dark" @click="setDegrees('0')">0 °C</button>
-      <button class="button is-info" @click="setDegrees('10')">10 °C</button>
-      <button class="button is-warning" @click="setDegrees('15')">15 °C</button>
-      <button class="button is-danger" @click="setDegrees('20')">20 °C</button>
+      <div class="has-text-centered">
+        <template v-if = "state.degrees">
+          <p class="title">{{ state.degrees.value }} °C</p>
+        </template>
+      </div>
     </div>
+
+    <template slot="footer">
+      <a href="" class="card-footer-item" @click.prevent="setDegrees('0')">0°C</a>
+      <a href="" class="card-footer-item" @click.prevent="setDegrees('10')">10°C</a>
+      <a href="" class="card-footer-item" @click.prevent="setDegrees('15')">15°C</a>
+      <a href="" class="card-footer-item" @click.prevent="setDegrees('20')">20°C</a>
+    </template>
   </card-device>
 </template>
 

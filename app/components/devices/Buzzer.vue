@@ -1,14 +1,21 @@
 <template>
-  <card-device>
+  <card-device :hasActions="true">
     <div slot="img">
       <img v-if="state.buzzing && state.buzzing.value === '1'" src="../../assets/images/icons/buzzer/on.png" alt="" >
       <img v-else-if="state.buzzing && state.buzzing.value === '0'" src="../../assets/images/icons/buzzer/off.png" alt="" >
       <img v-else src="../../assets/images/icons/common/unknown.png" alt="" >
     </div>
     <div slot="main">
-      <button class="button is-danger is-fullwidth" v-if="state.buzzing && state.buzzing.value === '1'" @click="turnBuzzer(false)">Éteindre</button>
-        <button class="button is-success is-fullwidth" v-else @click="turnBuzzer(true)">Allumer</button>
+      <div class="has-text-centered">
+        <template v-if = "state.buzzing">
+          <p class="title">{{ state.buzzing.value === '1' ? 'Actif' : 'Inactif' }}</p>
+        </template>
+      </div>
     </div>
+    <template slot="footer">
+      <a href="" class="card-footer-item" v-if="state.buzzing && state.buzzing.value === '1'" @click.prevent="turnBuzzer(false)">Fermer</a>
+      <a href="" class="card-footer-item" v-else @click.prevent="turnBuzzer(true)">Ouvrir</a>
+    </template>
   </card-device>
 </template>
 

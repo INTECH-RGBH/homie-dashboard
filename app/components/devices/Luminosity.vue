@@ -4,7 +4,9 @@
       <img src="../../assets/images/icons/luminosity/sensor.png" alt="" >
     </div>
     <div slot="main">
-      {{state.lux ? state.lux.value : ''}} lx
+    <div class="has-text-centered">
+          <p class="title">{{state.lux ? state.lux.value : ''}} lx</p>
+        </div>
     </div>
   </card-device>
 </template>

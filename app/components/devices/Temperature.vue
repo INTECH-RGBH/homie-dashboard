@@ -5,7 +5,9 @@
       <!--<canvas ref="canvas"></canvas>-->
     </div>
     <div slot="main">
-      {{state.degrees ? state.degrees.value : ''}} °C
+     <div class="has-text-centered">
+          <p class="title">{{state.degrees ? state.degrees.value : ''}} °C</p>
+        </div>
     </div>
   </card-device>
 </template>
