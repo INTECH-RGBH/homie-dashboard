@@ -14,20 +14,9 @@
 import CardDevice from "./Card"
 
 export default {
-  props: ['state', 'deviceId', 'nodeId', ],
+  props: ['state', 'deviceId', 'nodeId'],
 
-  components:{CardDevice},
-
-  methods:{
-    changeTemp(){
-      this.setState({
-            deviceId: this.deviceId,
-            nodeId: this.nodeId,
-            property: "",
-            value: "1"})
-    },
-    ...mapActions(["setState"])
-  }
+  components:{CardDevice}
 }
 </script>
 

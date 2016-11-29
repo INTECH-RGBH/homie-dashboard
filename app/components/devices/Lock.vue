@@ -12,7 +12,6 @@
     <div v-else slot = "main">
       <button v-on:click="turnLock()">Modify</button>
     </div>
-    
   </card-device>
 </template>
 
@@ -38,7 +37,6 @@ export default {
     },
     ...mapActions(["setState"])
   }
-  
 }
 </script>
 
