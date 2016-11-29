@@ -20,7 +20,7 @@ export default function wsRequest (opts) {
     timeout = setTimeout(function onTimeout () {
       reject(new Error('Response timeout'))
       removeWsListener()
-    }, 1000)
+    }, 2500)
 
     opts.ws.on('message', onMessage)
     opts.ws.send(request.text)

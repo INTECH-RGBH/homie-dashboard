@@ -1,9 +1,10 @@
 <template>
   <card-device>
     <div slot="img">
-      <img src="../../assets/images/icons/door/door-open.png" alt="" >
+      <img src="../../assets/images/icons/shutters/0.png" alt="" >
     </div>
     <div slot="main">
+      {{state.motion.value}}
     </div>
   </card-device>
 </template>

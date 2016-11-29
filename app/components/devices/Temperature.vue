@@ -12,7 +12,6 @@
 
 <script>
 import CardDevice from "./Card"
-import {mapActions} from "eva.js"
 
 export default {
   props: ['state', 'deviceId', 'nodeId', ],

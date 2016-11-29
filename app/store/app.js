@@ -39,6 +39,13 @@ export default function initializeStore (app) {
       },
       [PATCH_INFRASTRUCTURE] (state, patch) {
         jsonpatch.apply(state.infrastructure, patch)
+
+        for (const op of patch) {
+          if (op.op === 'add') {
+            state.infrastructure = JSON.parse(JSON.stringify(state.infrastructure))
+            break
+          }
+        }
       }
     },
     actions: {
