@@ -106,8 +106,6 @@ export default function initializeStore (app) {
   ws.on('message', function onMessage (data) {
     const message = parseMessage(data)
 
-    console.log(message)
-
     if (message.type !== MESSAGE_TYPES.EVENT) return
 
     switch (message.event) {
