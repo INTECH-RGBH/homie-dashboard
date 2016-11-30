@@ -22,10 +22,10 @@
     </div>
 
     <template slot="footer">
-      <a href="" class="card-footer-item" @click.prevent="setDegrees('0')">0°C</a>
-      <a href="" class="card-footer-item" @click.prevent="setDegrees('10')">10°C</a>
-      <a href="" class="card-footer-item" @click.prevent="setDegrees('15')">15°C</a>
-      <a href="" class="card-footer-item" @click.prevent="setDegrees('20')">20°C</a>
+      <a href="" class="card-footer-item" @click.prevent="setDegrees('0')" v-bind:style="[state.degrees && state.degrees.value === '0' ? styleRedBackground : '']">0°C</a>
+      <a href="" class="card-footer-item" @click.prevent="setDegrees('10')" v-bind:style="[state.degrees && state.degrees.value === '10' ? styleRedBackground : '']">10°C</a>
+      <a href="" class="card-footer-item" @click.prevent="setDegrees('15')" v-bind:style="[state.degrees && state.degrees.value === '15' ? styleRedBackground : '']">15°C</a>
+      <a href="" class="card-footer-item" @click.prevent="setDegrees('20')" v-bind:style="[state.degrees && state.degrees.value === '20' ? styleRedBackground : '']">20°C</a>
     </template>
   </card-device>
 </template>
@@ -35,6 +35,14 @@ import {mapActions} from 'eva.js'
 import CardDevice from './Card'
 
 export default {
+  computed: {
+    styleRedBackground() {
+      return {
+        backgroundColor: '#e74c3c',
+        color: "black"
+      }
+    }
+  },
   props: ['state', 'deviceId', 'nodeId'],
   methods: {
     async setDegrees (degrees) {
