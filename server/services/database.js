@@ -36,6 +36,24 @@ export async function deleteToken ({ db }, token) {
   return result.changes === 1
 }
 
+/* Tags */
+
+export async function createTag ({ db }, tag) {
+  await db.run(
+    'INSERT INTO tags (id, color, icon) VALUES (?, ?)',
+    tag.id, tag.color, tag.icon
+  )
+}
+
+export async function deleteTag ({ db }, tagId) {
+  const result = await db.run(
+    'DELETE FROM tags WHERE id = ?',
+    tagId
+  )
+
+  return result.changes === 1
+}
+
 /* Devices */
 
 export async function syncInfrastructure ({ db }, infrastructure) {
@@ -122,6 +140,19 @@ export async function syncInfrastructure ({ db }, infrastructure) {
         nodeId = statement.lastID
       }
 
+      /* syncing tags */
+
+      for (const tag of node.getTags()) {
+        await db.run(
+          `INSERT INTO nodes_tags (node_id, tag_id)
+          SELECT :node_id, :tag_id
+          WHERE (SELECT id FROM nodes_tags WHERE node_id = :node_id AND tag_id = :tag_id) IS NULL
+          `, {
+            ':node_id': nodeId,
+            ':tag_id': tag
+          })
+      }
+
       /* syncing properties */
 
       for (let property of node.getProperties()) {
@@ -164,7 +195,23 @@ export async function syncInfrastructure ({ db }, infrastructure) {
   }
 }
 
-export async function getAllDevices ({ db }, infrastructure) {
+export async function getInfrastructure ({ db }, infrastructure) {
+  /* Tags */
+
+  const tags = await db.all(
+    `SELECT id, color, icon
+    FROM tags
+    `)
+
+  for (const tag of tags) if (!infrastructure.hasTag(tag.id)) infrastructure.addTag(tag)
+
+  /* Devices */
+
+  const tagsPerNodes = await db.all(
+    `SELECT tag_id, node_id
+    FROM nodes_tags
+    `)
+
   const values = await db.all(
     `SELECT
       d.id AS 'd.id',
@@ -179,6 +226,7 @@ export async function getAllDevices ({ db }, infrastructure) {
       d.fw_version AS 'd.fw_version',
       d.fw_checksum AS 'd.fw_checksum',
       d.implementation AS 'd.implementation',
+      n.id AS 'n.id',
       n.device_node_id AS 'n.device_node_id',
       n.type AS 'n.type',
       n.properties AS 'n.properties',
@@ -197,7 +245,7 @@ export async function getAllDevices ({ db }, infrastructure) {
       device = new Device()
       device.id = value['d.id']
       device.name = value['d.name']
-      device.online = value['d.online']
+      device.online = value['d.online'] === 1
       device.localIp = value['d.local_ip']
       device.mac = value['d.mac']
       device.setStatProperty('signal', parseInt(value['d.stats_signal'], 10))
@@ -217,6 +265,7 @@ export async function getAllDevices ({ db }, infrastructure) {
       node.id = value['n.device_node_id']
       node.type = value['n.type']
       node.propertiesDefinition = value['n.properties']
+      for (const tagPerNode of tagsPerNodes) if (tagPerNode.node_id === value['n.id']) node.addTag(tagPerNode.tag_id)
       device.addNode(node)
     } else node = device.getNode(value['n.device_node_id'])
 

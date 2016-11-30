@@ -12,6 +12,8 @@ export default class Node extends EventEmitter {
 
     this._properties = new Map()
 
+    this._tags = new Set()
+
     this.isValid = false
 
     Object.seal(this)
@@ -35,6 +37,15 @@ export default class Node extends EventEmitter {
 
   getProperties () {
     return this._properties.values()
+  }
+
+  addTag (tag) {
+    this._tags.add(tag)
+    this._wasUpdated()
+  }
+
+  getTags () {
+    return this._tags.values()
   }
 
   get device () { return this._device }
@@ -92,6 +103,8 @@ export default class Node extends EventEmitter {
     for (const property of this.getProperties()) {
       if (property.isValid) representation.properties[property.id] = property.toJSON()
     }
+    representation.tags = []
+    for (const tag of this.getTags()) representation.tags.push(tag)
 
     return representation
   }

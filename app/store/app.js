@@ -19,7 +19,10 @@ export default function initializeStore (app) {
       isAuthentified: false,
       websocketAuthFailed: false,
       intendedRoute: '/',
-      infrastructure: {}
+      infrastructure: {
+        devices: {},
+        tags: {}
+      }
     },
     mutations: {
       [SET_IS_CONNECTED] (state, connected) {
