@@ -123,6 +123,7 @@ export default class Device extends EventEmitter {
     const representation = {}
     representation.id = this.id
     representation.name = this.name
+    representation.online = this.online
     representation.localIp = this.localIp
     representation.mac = this.mac
     representation.stats = {
