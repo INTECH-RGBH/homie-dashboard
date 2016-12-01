@@ -15,7 +15,6 @@ echo Starting MQTT broker (RED)
 start cmd /k "color 4F && "%MOSQUITTO_DIR%\mosquitto" -v"
 echo Starting development server (BLUE)
 start cmd /k "color 1F && npm run server-dev"
-timeout 2
 echo Starting emulator (GREEN)
 start cmd /k "color 2F && npm run emulator-start"
 echo Starting development web app (PURPLE)
