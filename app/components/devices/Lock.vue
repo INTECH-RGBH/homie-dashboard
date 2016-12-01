@@ -1,16 +1,16 @@
 <template>
-  <card-device :hasActions="true">
+  <node :hasActions="true" :nodeData="nodeData">
     <div slot="img">
-      <img v-if = "state.open && state.open.value === '1'" src = "../../assets/images/icons/lock/open.png">
-      <img v-else-if = "state.open && state.open.value === '0'" src = "../../assets/images/icons/lock/closed.png" alt ="">
+      <img v-if = "nodeData.properties.open && nodeData.properties.open.value === '1'" src = "../../assets/images/icons/lock/open.png">
+      <img v-else-if = "nodeData.properties.open && nodeData.properties.open.value === '0'" src = "../../assets/images/icons/lock/closed.png" alt ="">
       <img v-else src="../../assets/images/icons/common/unknown.png" alt="" >
     </div>
 
     <div slot="main">
       <div class="has-text-centered">
         <p class="title">
-          <template v-if="state.open">
-            {{ state.open.value === '1' ? 'Déverrouillé' : 'Verrouillé' }}
+          <template v-if="nodeData.properties.open">
+            {{ nodeData.properties.open.value === '1' ? 'Déverrouillé' : 'Verrouillé' }}
           </template>
           <template v-else>
             ?
@@ -20,26 +20,26 @@
     </div>
 
     <template slot="footer">
-      <a href="" class="card-footer-item" v-if="state.open && state.open.value === '1'" @click.prevent="turnLock(false)">Fermer</a>
+      <a href="" class="card-footer-item" v-if="nodeData.properties.open && nodeData.properties.open.value === '1'" @click.prevent="turnLock(false)">Fermer</a>
       <a href="" class="card-footer-item" v-else @click.prevent="turnLock(true)">Ouvrir</a>
     </template>
-  </card-device>
+  </node>
 </template>
 
 <script>
-import CardDevice from './Card'
+import {Component as Node, mixin as nodeMixin} from './Node.js'
 import {mapActions} from 'eva.js'
 
 export default {
-  props: ['state', 'deviceId', 'nodeId'],
+  mixins: [nodeMixin],
 
-  components: {CardDevice},
+  components: {Node},
 
   methods: {
     async turnLock (open) {
       await this.setState({
-        deviceId: this.deviceId,
-        nodeId: this.nodeId,
+        deviceId: this.nodeData.device.id,
+        nodeId: this.nodeData.id,
         property: 'open',
         value: open ? '1' : '0'
       })

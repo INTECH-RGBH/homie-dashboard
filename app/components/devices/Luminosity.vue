@@ -1,13 +1,13 @@
 <template>
-  <card-device>
+  <node :nodeData="nodeData">
     <div slot="img">
       <img src="../../assets/images/icons/luminosity/sensor.png" alt="" >
     </div>
     <div slot="main">
       <div class="has-text-centered">
         <p class="title">
-          <template v-if="state.lux">
-            {{ state.lux.value }} lx
+          <template v-if="nodeData.properties.lux">
+            {{ nodeData.properties.lux.value }} lx
           </template>
           <template v-else>
             ?
@@ -15,16 +15,16 @@
         </p>
       </div>
     </div>
-  </card-device>
+  </node>
 </template>
 
 <script>
-import CardDevice from './Card'
+import {Component as Node, mixin as nodeMixin} from './Node.js'
 
 export default {
-  props: ['state', 'deviceId', 'nodeId'],
+  mixins: [nodeMixin],
 
-  components: {CardDevice}
+  components: {Node}
 }
 </script>
 

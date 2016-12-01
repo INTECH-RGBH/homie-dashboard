@@ -1,16 +1,16 @@
 <template>
-  <card-device>
+  <node :nodeData="nodeData">
     <div slot="img">
-      <img v-if="state.open && state.open.value === '1'" src="../../assets/images/icons/window/window-open.png" alt="" >
-      <img v-else-if="state.open && state.open.value === '0'" src="../../assets/images/icons/window/window-close.png" alt="" >
+      <img v-if="nodeData.properties.open && nodeData.properties.open.value === '1'" src="../../assets/images/icons/window/window-open.png" alt="" >
+      <img v-else-if="nodeData.properties.open && nodeData.properties.open.value === '0'" src="../../assets/images/icons/window/window-close.png" alt="" >
       <img v-else src="../../assets/images/icons/common/unknown.png" alt="" >
     </div>
 
     <div slot="main">
       <div class="has-text-centered">
         <p class="title">
-          <template v-if="state.open">
-            {{ state.open.value === '1' ? 'Ouverte' : 'Fermée' }}
+          <template v-if="nodeData.properties.open">
+            {{ nodeData.properties.open.value === '1' ? 'Ouverte' : 'Fermée' }}
           </template>
           <template v-else>
             ?
@@ -18,16 +18,16 @@
         </p>
       </div>
     </div>
-  </card-device>
+  </node>
 </template>
 
 <script>
-import CardDevice from './Card'
+import {Component as Node, mixin as nodeMixin} from './Node.js'
 
 export default {
-  props: ['state', 'deviceId', 'nodeId'],
+  mixins: [nodeMixin],
 
-  components: {CardDevice}
+  components: {Node}
 }
 </script>
 

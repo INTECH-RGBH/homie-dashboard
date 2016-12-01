@@ -1,13 +1,13 @@
 <template>
-  <card-device>
+  <node :nodeData="nodeData">
     <div slot="img">
       <img src="../../assets/images/icons/humidity/drop.png" alt="" >
     </div>
     <div slot="main">
       <div class="has-text-centered">
         <p class="title">
-          <template v-if="state.percentage">
-            {{ state.percentage.value }} %
+          <template v-if="nodeData.properties.percentage">
+            {{ nodeData.properties.percentage.value }} %
           </template>
           <template v-else>
             ?
@@ -15,16 +15,15 @@
         </p>
       </div>
     </div>
-  </card-device>
+  </node>
 </template>
 
 <script>
-import CardDevice from './Card'
+import {Component as Node, mixin as nodeMixin} from './Node.js'
 
 export default {
-  props: ['state', 'deviceId', 'nodeId'],
-
-  components: {CardDevice}
+  mixins: [nodeMixin],
+  components: {Node}
 }
 </script>
 
