@@ -43,7 +43,7 @@
     </nav>
 
     <div class="columns is-multiline is-mobile">
-      <component v-for="node in filteredNodes" :is="types[node.type]" :state = "node.properties" :deviceId = "node.device.id" :nodeId = "node.id"></component>
+      <component v-for="node in filteredNodes" :is="types[node.type]" :nodeData="node"></component>
     </div>
   </div>
 </template>

@@ -1,5 +1,5 @@
 <template>
-  <card-device>
+  <node :nodeData="nodeData">
     <div slot="img">
       <img src="../../assets/images/icons/temperature/thermometer.png" alt="" >
       <!--<canvas ref="canvas"></canvas>-->
@@ -7,8 +7,8 @@
     <div slot="main">
       <div class="has-text-centered">
         <p class="title">
-          <template v-if="state.degrees">
-            {{ state.degrees.value }} °C
+          <template v-if="this.nodeData.properties.degrees">
+            {{ this.nodeData.properties.degrees.value }} °C
           </template>
           <template v-else>
             ?
@@ -16,16 +16,16 @@
         </p>
       </div>
     </div>
-  </card-device>
+  </node>
 </template>
 
 <script>
-import CardDevice from './Card'
+import {Component as Node, mixin as nodeMixin} from './Node.js'
 
 export default {
-  props: ['state', 'deviceId', 'nodeId'],
+  mixins: [nodeMixin],
 
-  components: {CardDevice}
+  components: {Node}
 }
 </script>
 
