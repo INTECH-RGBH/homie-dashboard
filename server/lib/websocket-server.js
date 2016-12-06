@@ -5,6 +5,12 @@ import bodyParser from 'body-parser'
 import {Server as WebSocketServer} from 'ws'
 import {createAuthToken, checkToken, deleteToken} from '../services/database'
 
+/**
+ * This function creates a WebSocket server.
+ * The HTTP server created handles authentication
+ * @param {ip: string, port: number, db: Database, settings: Object} opts options
+ * @returns {Promise} promise, to be resolved on success with the WebSocket server instance or rejected on failure
+ */
 export default function createWebsocketServer (opts) {
   return new Promise((resolve, reject) => {
     const app = express()

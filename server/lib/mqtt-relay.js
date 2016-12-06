@@ -4,7 +4,15 @@ import Device from './infrastructure/device'
 import Node from './infrastructure/node'
 import Property from './infrastructure/property'
 
+/**
+ * This class glues the MQTT with the infrastructure
+ @augments EventEmitter
+ */
 export default class MqttRelay extends EventEmitter {
+  /**
+   * Constructor
+   @param {$deps: Object, mqttClient: MqttClient, infrastructure: Infrastructure}
+   */
   constructor ({ $deps, mqttClient, infrastructure }) {
     super()
     this.$deps = $deps

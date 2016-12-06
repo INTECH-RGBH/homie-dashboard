@@ -3,7 +3,19 @@ import {EventEmitter} from 'events'
 import {generateMessage, parseMessage, MESSAGE_TYPES} from '../../common/ws-messages'
 import {INFRASTRUCTURE} from '../../common/events'
 
+/**
+ * This class handles WebSocket clients
+ * This is where every request gets parsed / responded
+ @augments EventEmitter
+ */
 export default class Client extends EventEmitter {
+  /**
+   * Constructor
+   @param {Object} opts
+   @param {Object} opts.$deps
+   @param {MqttClient} opts.mqttClient
+   @param {Infrastructure} opts.infrastructure
+   */
   constructor (opts) {
     super()
 
@@ -24,10 +36,19 @@ export default class Client extends EventEmitter {
     })
   }
 
+  /**
+   * This function sends a response
+   @param {Object} request the initial request
+   @param {} value value to respond
+   */
   _sendResponse (request, value) {
     this.ws.send(generateMessage({ type: MESSAGE_TYPES.RESPONSE, id: request.id, value }))
   }
 
+  /**
+   * This function is called when we receive a message from the client
+   @param {Object} message message received
+   */
   async onMessage (message) {
     if (message.type !== MESSAGE_TYPES.REQUEST) return
 

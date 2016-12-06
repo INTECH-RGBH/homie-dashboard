@@ -6,6 +6,11 @@ import Property from '../lib/infrastructure/property'
 
 /* Auth */
 
+/**
+ * This function generates and inserts an auth token in the database
+ * @param {db: Database} $deps dependencies
+ * @returns {Promise} promise, to be resolved on success with the token or rejected on failure
+ */
 export async function createAuthToken ({ db }) {
   const token = uuid()
   const now = new Date()
@@ -18,6 +23,12 @@ export async function createAuthToken ({ db }) {
   return token
 }
 
+/**
+ * This function checks whether the given auth token exists in the database
+ * @param {db: Database} $deps dependencies
+ * @param {string} token the token to check
+ * @returns {Promise} promise, to be resolved on success with an existence bool or rejected on failure
+ */
 export async function checkToken ({ db }, token) {
   const record = await db.get(
     'SELECT * FROM auth_tokens WHERE token = ?',
@@ -27,6 +38,12 @@ export async function checkToken ({ db }, token) {
   return record !== undefined
 }
 
+/**
+ * This function deletes the given auth token in the database
+ * @param {db: Database} $deps dependencies
+ * @param {string} token the token to delete
+ * @returns {Promise} promise, to be resolved on success with a successful bool or rejected on failure
+ */
 export async function deleteToken ({ db }, token) {
   const result = await db.run(
     'DELETE FROM auth_tokens WHERE token = ?',
@@ -38,6 +55,12 @@ export async function deleteToken ({ db }, token) {
 
 /* Tags */
 
+/**
+ * This function creates a tag in the database
+ * @param {db: Database} $deps dependencies
+ * @param {string} tag the tag to create
+ * @returns {Promise} promise, to be resolved on success or rejected on failure
+ */
 export async function createTag ({ db }, tag) {
   await db.run(
     'INSERT INTO tags (id, color, icon) VALUES (?, ?)',
@@ -45,6 +68,12 @@ export async function createTag ({ db }, tag) {
   )
 }
 
+/**
+ * This function deletes a tag in the database
+ * @param {db: Database} $deps dependencies
+ * @param {string} tagId the tag to delete
+ * @returns {Promise} promise, to be resolved on success with a successful bool or rejected on failure
+ */
 export async function deleteTag ({ db }, tagId) {
   const result = await db.run(
     'DELETE FROM tags WHERE id = ?',
@@ -56,6 +85,14 @@ export async function deleteTag ({ db }, tagId) {
 
 /* Devices */
 
+/**
+ * This function synchronizes the infrastructure with the database.
+ * It iterates through all devices, nodes, properties and tags of the infrastructure,
+ * and updates the SQLite database accordingly
+ * @param {db: Database} $deps dependencies
+ * @param {Infrastructure} infrastructure the infrastructure to synchronize from
+ * @returns {Promise} promise, to be resolved on success or rejected on failure
+ */
 export async function syncInfrastructure ({ db }, infrastructure) {
   for (let device of infrastructure.getDevices()) {
     if (!device.isValid) return
@@ -195,6 +232,14 @@ export async function syncInfrastructure ({ db }, infrastructure) {
   }
 }
 
+/**
+ * This function synchronizes the database with the infrastructure.
+ * It iterates through all devices, nodes, properties and tags of the SQLite database,
+ * and updates the infrastructure accordingly
+ * @param {db: Database} $deps dependencies
+ * @param {Infrastructure} infrastructure the infrastructure to synchronize against
+ * @returns {Promise} promise, to be resolved on success or rejected on failure
+ */
 export async function getInfrastructure ({ db }, infrastructure) {
   /* Tags */
 

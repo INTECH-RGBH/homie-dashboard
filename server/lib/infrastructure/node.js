@@ -1,5 +1,8 @@
 import {EventEmitter} from 'events'
 
+/**
+ * This class represents a node
+ */
 export default class Node extends EventEmitter {
   constructor () {
     super()
