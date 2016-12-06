@@ -20,8 +20,8 @@
     </div>
 
     <template slot="footer">
-      <a href="" class="card-footer-item" v-if="nodeData.properties.open && nodeData.properties.open.value === '1'" @click.prevent="turnLock(false)">Fermer</a>
-      <a href="" class="card-footer-item" v-else @click.prevent="turnLock(true)">Ouvrir</a>
+      <a href="" class="card-footer-item" v-if="nodeData.properties.open && nodeData.properties.open.value === '1'" @click.prevent="turnLock(false)">Verrouiller</a>
+      <a href="" class="card-footer-item" v-else @click.prevent="turnLock(true)">Déverrouiller</a>
     </template>
   </node>
 </template>

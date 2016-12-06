@@ -107,3 +107,115 @@ export default {
       &.is-no
         color: $red
 </style>
+
+  <style lang="sass">
+    $track-color: rgba(0, 0, 0, .6) !default
+    $thumb-color: #e74c3c !default
+
+    $thumb-radius: 17px !default
+    $thumb-height: 17px !default
+    $thumb-width: 17px !default
+    $thumb-shadow-size: 0 !default
+    $thumb-shadow-blur: 0 !default
+    $thumb-shadow-color: #111 !default
+    $thumb-border-width: 0 !default
+    $thumb-border-color: #fff !default
+
+    $track-width: 100% !default
+    $track-height: 2px !default
+    $track-shadow-size: 0 !default
+    $track-shadow-blur: 0 !default
+    $track-shadow-color: #000 !default
+    $track-border-width: 0 !default
+    $track-border-color: #000 !default
+
+    $track-radius: 5px !default
+    $contrast: 5% !default
+
+    @mixin shadow($shadow-size, $shadow-blur, $shadow-color)
+      box-shadow: $shadow-size $shadow-size $shadow-blur $shadow-color, 0 0 $shadow-size lighten($shadow-color, 5%)
+
+    @mixin track()
+      width: $track-width
+      height: $track-height
+      cursor: pointer
+      transition: all .2s ease
+
+    @mixin thumb()
+      @include shadow($thumb-shadow-size, $thumb-shadow-blur, $thumb-shadow-color)
+      border: $thumb-border-width solid $thumb-border-color
+      height: $thumb-height
+      width: $thumb-width
+      border-radius: $thumb-radius
+      background: $thumb-color
+      cursor: pointer
+
+    [type=range]
+      -webkit-appearance: none
+      margin: $thumb-height / 2 0
+      width: $track-width
+
+      &:focus
+        outline: none
+
+      &::-webkit-slider-runnable-track
+        @include track()
+        @include shadow($track-shadow-size, $track-shadow-blur, $track-shadow-color)
+        background: $track-color
+        border: $track-border-width solid $track-border-color
+        border-radius: $track-radius
+
+
+      &::-webkit-slider-thumb
+        @include thumb()
+        -webkit-appearance: none
+        margin-top: ((-$track-border-width * 2 + $track-height) / 2) - ($thumb-height / 2)
+
+
+      &:focus::-webkit-slider-runnable-track
+        background: lighten($track-color, $contrast)
+
+
+      &::-moz-range-track
+        @include track()
+        @include shadow($track-shadow-size, $track-shadow-blur, $track-shadow-color)
+        background: $track-color
+        border: $track-border-width solid $track-border-color
+        border-radius: $track-radius
+
+      &::-moz-range-thumb
+        @include thumb()
+
+
+      &::-ms-track
+        @include track()
+        background: transparent
+        border-color: transparent
+        border-width: $thumb-width 0
+        color: transparent
+
+
+      &::-ms-fill-lower
+        @include shadow($track-shadow-size, $track-shadow-blur, $track-shadow-color)
+        background: darken($track-color, $contrast)
+        border: $track-border-width solid $track-border-color
+        border-radius: $track-radius * 2
+
+      &::-ms-fill-upper
+        @include shadow($track-shadow-size, $track-shadow-blur, $track-shadow-color)
+        background: $track-color
+        border: $track-border-width solid $track-border-color
+        border-radius: $track-radius * 2
+
+
+      &::-ms-thumb
+        @include thumb()
+
+
+      &:focus::-ms-fill-lower
+        background: $track-color
+
+
+      &:focus::-ms-fill-upper
+        background: lighten($track-color, $contrast)
+  </style>

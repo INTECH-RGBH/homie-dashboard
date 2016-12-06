@@ -18,8 +18,8 @@
       </div>
     </div>
     <template slot="footer">
-      <a href="" class="card-footer-item" v-if="nodeData.properties.buzzing && nodeData.properties.buzzing.value === '1'" @click.prevent="turnBuzzer(false)">Fermer</a>
-      <a href="" class="card-footer-item" v-else @click.prevent="turnBuzzer(true)">Ouvrir</a>
+      <a href="" class="card-footer-item" v-if="nodeData.properties.buzzing && nodeData.properties.buzzing.value === '1'" @click.prevent="turnBuzzer(false)">Désactiver</a>
+      <a href="" class="card-footer-item" v-else @click.prevent="turnBuzzer(true)">Activer</a>
     </template>
   </node>
 </template>

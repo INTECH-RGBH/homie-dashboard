@@ -40,7 +40,7 @@ export default {
     styleRedBackground () {
       return {
         backgroundColor: '#e74c3c',
-        color: 'black'
+        color: '#fff'
       }
     }
   },
