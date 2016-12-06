@@ -192,9 +192,10 @@ const DEVICES = [
 const log = bunyan.createLogger({ name: 'emulator' })
 const client = mqtt.connect('mqtt://127.0.0.1:1883')
 const qos1Retained = { qos: 1, retain: true }
+const delay = ms => new Promise(resolve => setTimeout(() => resolve(), ms))
 let interval = null
 let startTime = null
-client.on('connect', function onConnect () {
+client.on('connect', async function onConnect () {
   log.info('connected to the broker')
 
   startTime = new Date()
@@ -220,6 +221,7 @@ client.on('connect', function onConnect () {
     }
 
     client.publish(`${BASE_TOPIC}/${device.id}/$online`, 'true', qos1Retained)
+    await delay(200)
   }
 
   client.subscribe('homie/+/+/+/set')
@@ -243,7 +245,7 @@ const sendStats = function (device) {
   client.publish(`${BASE_TOPIC}/${device.id}/$stats/signal`, (Math.floor(Math.random() * 100) + 0).toString(), qos1Retained)
 }
 
-const sendAllStats = function () {
+const sendAllStats = async function () {
   for (let device of DEVICES) {
     sendStats(device)
 
@@ -262,5 +264,6 @@ const sendAllStats = function () {
         client.publish(`${BASE_TOPIC}/${device.id}/${node.id}/motion`, Math.random() < 0.5 ? '1' : '0', qos1Retained)
       }
     })
+    await delay(200)
   }
 }
