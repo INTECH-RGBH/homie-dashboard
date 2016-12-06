@@ -1,5 +1,8 @@
 import {EventEmitter} from 'events'
 
+/**
+ * This class represents a property
+ */
 export default class Property extends EventEmitter {
   constructor () {
     super()

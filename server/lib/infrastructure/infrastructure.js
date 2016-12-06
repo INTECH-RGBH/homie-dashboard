@@ -1,6 +1,12 @@
 import {EventEmitter} from 'events'
 
+/**
+ * This class represents the whole devices infrastructure
+ */
 class Infrastructure extends EventEmitter {
+  /**
+   * Constructor
+   */
   constructor () {
     super()
 
@@ -11,10 +17,19 @@ class Infrastructure extends EventEmitter {
     Object.seal(this)
   }
 
+  /**
+   * Returns whether or not the device exists in the infrastructure
+   * @param {string} deviceId the device ID
+   * @returns {bool} whether or not the device exists
+   */
   hasDevice (deviceId) {
     return this._devices.has(deviceId)
   }
 
+  /**
+   * Adds a device to the infrastructure
+   * @param {Device} device
+   */
   addDevice (device) {
     this._devices.set(device.id, device)
     device.on('update', (update) => {
@@ -23,27 +38,53 @@ class Infrastructure extends EventEmitter {
     this._wasUpdated()
   }
 
+  /**
+   * Gets a device from the infrastructure
+   * @param {string} deviceId the device ID
+   * @returns {Device} the device
+   */
   getDevice (deviceId) {
     return this._devices.get(deviceId)
   }
 
+  /**
+   * Gets all devices from the infrastructure
+   * @returns {Iterable.<Device>} the devices
+   */
   getDevices () {
     return this._devices.values()
   }
 
+  /**
+   * Returns whether or not the infrastructure has the given tag
+   * @returns {bool} whether or not the tag exists
+   */
   hasTag (tagId) {
     return this._devices.has(tagId)
   }
 
+  /**
+   * Adds a tag
+   * @param {Object} tag the tag
+   */
   addTag (tag) {
     this._tags.set(tag.id, tag)
     this._wasUpdated()
   }
 
+  /**
+   * Gets a tag
+   * @param {string} tagId the tag ID
+   * @returns {Object} the tag
+   */
   getTag (tagId) {
     return this._tags.get(tagId)
   }
 
+  /**
+   * Gets all tags from the infrastructure
+   * @returns {Iterable.<Object>} the tags
+   */
   getTags () {
     return this._tags.values()
   }

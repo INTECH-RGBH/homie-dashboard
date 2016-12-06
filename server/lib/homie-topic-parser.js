@@ -7,17 +7,39 @@ export const TOPIC_TYPES = {
   INVALID: 'INVALID'
 }
 
+/**
+ * This function validates the ID format of the Homie convention
+ * @param {string} id ID to test
+ * @returns {bool} `true` if valid, `false` if not
+ */
 const validateIdFormat = (id) => /^[a-z0-9](?:[a-z0-9-]*[a-z0-9])?$/.test(id)
 
+/**
+ * This class parses Homie topics
+ */
 class HomieTopicParser {
+  /**
+   * Constructor
+   @param {string} baseTopic Base topic of Homie
+   */
   constructor (baseTopic = 'homie/') {
     this.setBaseTopic(baseTopic)
   }
 
+  /**
+   * This function sets the base topic of Homie
+   @param {string} baseTopic Base topic of Homie
+   */
   setBaseTopic (baseTopic) {
     this.baseTopic = baseTopic
   }
 
+  /**
+   * This function parses an Homie topic
+   @param {string} topic Topic to parse
+   @param {value} value to parse
+   @returns {type: TOPIC_TYPES} all related properties
+   */
   parse (topic, value) {
     if (!topic.startsWith(this.baseTopic)) return { type: TOPIC_TYPES.INVALID }
 
