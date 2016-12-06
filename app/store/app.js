@@ -102,8 +102,7 @@ export default function initializeStore (app) {
       ws.stop()
       app.$router.replace('/authentification')
     }
-  }).on('error', function onError (err) {
-    console.log(err)
+  }).on('error', function onError () {
   })
 
   ws.on('message', function onMessage (data) {

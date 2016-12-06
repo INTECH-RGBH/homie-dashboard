@@ -24,11 +24,12 @@
                 ?
           </template>
         </p>
-        <input type='range' v-model="rangeValue"  min='0' max='100' @change="setIntensity()"/>
       </div>
-
     </template>
 
+    <template slot="footer">
+      <input type="range" v-model="rangeValue" class="card-footer-item" min="0" max="100" :data-balloon="`${rangeValue}%`" data-balloon-pos="up" @change="setIntensity()"/>
+    </template>
   </node>
 </template>
 
@@ -58,7 +59,3 @@ export default {
   }
 }
 </script>
-
-<style lang="sass">
-
-</style>
