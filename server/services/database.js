@@ -63,7 +63,7 @@ export async function deleteToken ({ db }, token) {
  */
 export async function createTag ({ db }, tag) {
   await db.run(
-    'INSERT INTO tags (id, color, icon) VALUES (?, ?)',
+    'INSERT INTO tags (id, color, icon) VALUES (?, ?, ?)',
     tag.id, tag.color, tag.icon
   )
 }
@@ -79,7 +79,21 @@ export async function deleteTag ({ db }, tagId) {
     'DELETE FROM tags WHERE id = ?',
     tagId
   )
+  return result.changes === 1
+}
 
+export async function addTagToNode( { db }, nodeTag) {
+    await db.run(
+    'INSERT INTO nodes_tags (node_id, tag_id) VALUES (?, ?)',
+    nodeTag.nodeId, nodeTag.tagId
+  )
+}
+
+export async function deleteTagFromNode ({ db }, nodeTagId) {
+  const result = await db.run(
+    'DELETE FROM nodes_tags WHERE id = ?',
+    nodeTagId
+  )
   return result.changes === 1
 }
 
