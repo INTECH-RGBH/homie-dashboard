@@ -82,8 +82,8 @@ export async function deleteTag ({ db }, tagId) {
   return result.changes === 1
 }
 
-export async function addTagToNode( { db }, nodeTag) {
-    await db.run(
+export async function addTagToNode ({ db }, nodeTag) {
+  await db.run(
     'INSERT INTO nodes_tags (node_id, tag_id) VALUES (?, ?)',
     nodeTag.nodeId, nodeTag.tagId
   )

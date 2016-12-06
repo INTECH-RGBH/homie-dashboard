@@ -17,10 +17,6 @@ export default async function start ($deps) {
   /* Initialize the MQTT client */
 
   const mqttClient = createMqttClient(`mqtt://${$deps.settings.mqtt.host}:${$deps.settings.mqtt.port}`)
-  mqttClient.on('connect', function onConnect () {
-    $deps.log.info('connected to broker')
-    mqttClient.subscribe('homie/#', { qos: 1 })
-  })
 
   /* Hook the infrastructure to the MQTT */
 
