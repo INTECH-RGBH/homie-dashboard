@@ -4,7 +4,7 @@
       <div class="modal-background"></div>
       <div class="modal-card">
         <header class="modal-card-head">
-          <p class="modal-card-title">Paramètres</p>
+          <p class="modal-card-title">Paramètres du nœud <i>{{ nodeData.id }}</i> de l'objet <i>{{ nodeData.device.name }}</i></p>
           <button @click.prevent="settingsOpened = false" class="delete"></button>
         </header>
         <section class="modal-card-body">
@@ -29,7 +29,7 @@
         <span class="card-header-icon custom online" :class="getOnlineIconClasses(nodeData.device.online)" :data-balloon="`${nodeData.device.online ? 'En ligne' : 'Hors-ligne'}`" data-balloon-pos="up">
           <i class="fa fa-circle"></i>
         </span>
-        <a @click.prevent="settingsOpened = true" class="card-header-icon">
+        <a @click.prevent="settingsOpened = true" class="card-header-icon settings">
           <i class="fa fa-cog"></i>
         </a>
       </header>
@@ -83,6 +83,10 @@ export default {
   $red: #e74c3c
   $orange: #d35400
   $green: #27ae60
+  $gray: #363636
+
+  .card-header-icon.settings
+    color: $gray
 
   .card-header-icon.custom
     width: 20px
