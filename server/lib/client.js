@@ -2,6 +2,7 @@ import {EventEmitter} from 'events'
 
 import {generateMessage, parseMessage, MESSAGE_TYPES} from '../../common/ws-messages'
 import {INFRASTRUCTURE} from '../../common/events'
+import Tag from './infrastructure/tag'
 
 /**
  * This class handles WebSocket clients
@@ -61,6 +62,14 @@ export default class Client extends EventEmitter {
       const value = message.parameters.value
 
       this.mqttClient.publish(`homie/${deviceId}/${nodeId}/${property}/set`, value, { qos: 1, retain: true })
+
+      this._sendResponse(message, true)
+    } else if (message.method === 'createTag') {
+      const tagId = message.parameters.id
+
+      const tag = new Tag()
+      tag.id = tagId
+      this.infrastructure.addTag(tag)
 
       this._sendResponse(message, true)
     }

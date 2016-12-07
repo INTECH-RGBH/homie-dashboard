@@ -65,17 +65,20 @@ class Infrastructure extends EventEmitter {
 
   /**
    * Adds a tag
-   * @param {Object} tag the tag
+   * @param {Tag} tag the tag
    */
   addTag (tag) {
     this._tags.set(tag.id, tag)
+    tag.on('update', (update) => {
+      this.emit('update', update)
+    })
     this._wasUpdated()
   }
 
   /**
    * Gets a tag
    * @param {string} tagId the tag ID
-   * @returns {Object} the tag
+   * @returns {Tag} the tag
    */
   getTag (tagId) {
     return this._tags.get(tagId)
@@ -83,7 +86,7 @@ class Infrastructure extends EventEmitter {
 
   /**
    * Gets all tags from the infrastructure
-   * @returns {Iterable.<Object>} the tags
+   * @returns {Iterable.<Tag>} the tags
    */
   getTags () {
     return this._tags.values()
@@ -101,7 +104,7 @@ class Infrastructure extends EventEmitter {
     }
 
     for (const tag of this.getTags()) {
-      representation.tags[tag.id] = tag
+      if (tag.isValid) representation.tags[tag.id] = tag.toJSON()
     }
 
     return representation
