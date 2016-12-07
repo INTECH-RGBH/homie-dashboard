@@ -3,6 +3,7 @@ import {dateToSqlite} from '../helpers/sqlite'
 import Device from '../lib/infrastructure/device'
 import Node from '../lib/infrastructure/node'
 import Property from '../lib/infrastructure/property'
+import Tag from '../lib/infrastructure/tag'
 
 /* Auth */
 
@@ -56,19 +57,6 @@ export async function deleteToken ({ db }, token) {
 /* Tags */
 
 /**
- * This function creates a tag in the database
- * @param {db: Database} $deps dependencies
- * @param {string} tag the tag to create
- * @returns {Promise} promise, to be resolved on success or rejected on failure
- */
-export async function createTag ({ db }, tag) {
-  await db.run(
-    'INSERT INTO tags (id, color, icon) VALUES (?, ?, ?)',
-    tag.id, tag.color, tag.icon
-  )
-}
-
-/**
  * This function deletes a tag in the database
  * @param {db: Database} $deps dependencies
  * @param {string} tagId the tag to delete
@@ -108,6 +96,20 @@ export async function deleteTagFromNode ({ db }, nodeTagId) {
  * @returns {Promise} promise, to be resolved on success or rejected on failure
  */
 export async function syncInfrastructure ({ db }, infrastructure) {
+  /* Synchronize tags */
+
+  for (let tag of infrastructure.getTags()) {
+    await db.run(
+      `INSERT INTO tags (id)
+      SELECT :id
+      WHERE (SELECT id FROM tags WHERE id = :id) IS NULL
+      `, {
+        ':id': tag.id
+      })
+  }
+
+  /* Synchronize devices */
+
   for (let device of infrastructure.getDevices()) {
     if (!device.isValid) return
 
@@ -200,7 +202,7 @@ export async function syncInfrastructure ({ db }, infrastructure) {
           WHERE (SELECT id FROM nodes_tags WHERE node_id = :node_id AND tag_id = :tag_id) IS NULL
           `, {
             ':node_id': nodeId,
-            ':tag_id': tag
+            ':tag_id': tag.id
           })
       }
 
@@ -258,11 +260,17 @@ export async function getInfrastructure ({ db }, infrastructure) {
   /* Tags */
 
   const tags = await db.all(
-    `SELECT id, color, icon
+    `SELECT id
     FROM tags
     `)
 
-  for (const tag of tags) if (!infrastructure.hasTag(tag.id)) infrastructure.addTag(tag)
+  for (const tagInDb of tags) {
+    if (!infrastructure.hasTag(tagInDb['id'])) {
+      const tag = new Tag()
+      tag.id = tagInDb['id']
+      infrastructure.addTag(tag)
+    }
+  }
 
   /* Devices */
 
@@ -324,7 +332,7 @@ export async function getInfrastructure ({ db }, infrastructure) {
       node.id = value['n.device_node_id']
       node.type = value['n.type']
       node.propertiesDefinition = value['n.properties']
-      for (const tagPerNode of tagsPerNodes) if (tagPerNode.node_id === value['n.id']) node.addTag(tagPerNode.tag_id)
+      for (const tagPerNode of tagsPerNodes) if (tagPerNode.node_id === value['n.id']) node.addTag(infrastructure.getTag(tagPerNode.tag_id))
       device.addNode(node)
     } else node = device.getNode(value['n.device_node_id'])
 

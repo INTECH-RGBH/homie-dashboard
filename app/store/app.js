@@ -87,6 +87,17 @@ export default function initializeStore (app) {
           }})
 
         return result
+      },
+      async createTag ({commit}, opts) {
+        const result = await wsRequest({
+          ws,
+          method: 'createTag',
+          parameters: {
+            id: opts.id
+          }
+        })
+
+        return result
       }
     }
   })

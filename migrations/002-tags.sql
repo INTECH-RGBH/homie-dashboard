@@ -3,13 +3,9 @@
 --------------------------------------------------------------------------------
 
 CREATE TABLE tags (
-  id TEXT PRIMARY KEY NOT NULL,
-  color TEXT NOT NULL,
-  icon TEXT NOT NULL
+  id TEXT PRIMARY KEY NOT NULL
 
-  CONSTRAINT tags_id_ck CHECK(id <> ''),
-  CONSTRAINT tags_color_ck CHECK(color <> ''),
-  CONSTRAINT tags_icon_ck CHECK(icon <> '')
+  CONSTRAINT tags_id_ck CHECK(id <> '')
 );
 
 CREATE TABLE nodes_tags (
