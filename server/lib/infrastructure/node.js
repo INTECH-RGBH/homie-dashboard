@@ -47,6 +47,15 @@ export default class Node extends EventEmitter {
     this._wasUpdated()
   }
 
+  deleteTag (tag) {
+    this._tags.delete(tag)
+    this._wasUpdated()
+  }
+
+  hasTag (tag) {
+    return this._tags.has(tag)
+  }
+
   getTags () {
     return this._tags.values()
   }
@@ -107,7 +116,7 @@ export default class Node extends EventEmitter {
       if (property.isValid) representation.properties[property.id] = property.toJSON()
     }
     representation.tags = []
-    for (const tag of this.getTags()) representation.tags.push(tag)
+    for (const tag of this.getTags()) representation.tags.push(tag.id)
 
     return representation
   }

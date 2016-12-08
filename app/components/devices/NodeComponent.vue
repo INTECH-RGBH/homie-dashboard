@@ -8,7 +8,22 @@
           <button @click.prevent="settingsOpened = false" class="delete"></button>
         </header>
         <section class="modal-card-body">
-          Loool
+          <div class="content">
+            <h2>Informations sur l'objet</h2>
+
+            <ul>
+              <li>Nom : {{ nodeData.device.name }}</li>
+              <li>Firmware : {{ nodeData.device.fw.name }} (v{{ nodeData.device.fw.version }})</li>
+            </ul>
+
+            <h2>Nom du nœud</h2>
+
+            <h2>Tags</h2>
+
+            <ul class="tag-list">
+              <li v-for="tag in infrastructure.tags" @click="toggleTag(tag)"><span class="tag" :class="{ 'is-success': nodeData.tags.includes(tag.id) }"><span class="icon is-small"><i class="fa fa-tag"></i></span>&nbsp;{{ tag.id }}</span></li>
+            </ul>
+          </div>
         </section>
         <footer class="modal-card-foot">
           <a @click="settingsOpened = false" class="button is-primary">OK</a>
@@ -54,12 +69,17 @@
 </template>
 
 <script>
+import {mapState, mapActions} from 'eva.js'
+
 export default {
   props: ['nodeData', 'hasActions'],
   data () {
     return {
       settingsOpened: false
     }
+  },
+  computed: {
+    ...mapState(['infrastructure'])
   },
   methods: {
     getWifiIconClasses (signal) {
@@ -74,7 +94,18 @@ export default {
         'is-yes': online,
         'is-no': !online
       }
-    }
+    },
+    async toggleTag (tag) {
+      const operationAdd = !this.nodeData.tags.includes(tag.id)
+
+      await this.toggleTagAction({
+        deviceId: this.nodeData.device.id,
+        nodeId: this.nodeData.id,
+        tagId: tag.id,
+        operationAdd
+      })
+    },
+    ...mapActions({ toggleTagAction: 'toggleTag' })
   }
 }
 </script>
@@ -106,6 +137,13 @@ export default {
         color: $green
       &.is-no
         color: $red
+
+  ul.tag-list
+    list-style-type: none
+
+    li
+      display: inline-block
+      cursor: pointer
 </style>
 
   <style lang="sass">
