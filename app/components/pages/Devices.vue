@@ -9,10 +9,10 @@
       <div class="level-left">
         <div class="level-item">
           <p class="control has-addons">
-            <input v-model="tagInput.value" @focus="tagInput.focus = true" @blur="blurFilterWorkaround" class="input" type="text" placeholder="Filtrer ou créer un tag">
+            <input v-model="tagInput.value" @focus="tagInput.focus = true" @blur="tagInput.focus = false" class="input" type="text" placeholder="Filtrer ou créer un tag">
             <ul v-if="tagInput.focus == true" id="autocomplete-dropdown">
-              <li v-if="tagInput.value !== ''"><a href="" @click.prevent="createTag(tagInput.value)"><span class="icon is-small"><i class="fa fa-plus"></i></span> Créer le tag <b>{{ tagInput.value }}</b></a></li>
-              <li v-for="tag in dropdownTags"><a href="" @click.prevent="addTag(tag)"><span class="tag"><span class="icon is-small"><i class="fa fa-tag"></i></span>&nbsp;{{ tag.id }}</span></a></li>
+              <li v-if="tagInput.value !== ''"><a href="" @click.prevent @mousedown.prevent="createTag(tagInput.value)"><span class="icon is-small"><i class="fa fa-plus"></i></span> Créer le tag <b>{{ tagInput.value }}</b></a></li>
+              <li v-for="tag in dropdownTags"><a href="" @click.prevent @mousedown.prevent="addTag(tag)"><span class="tag"><span class="icon is-small"><i class="fa fa-tag"></i></span>&nbsp;{{ tag.id }}</span></a></li>
             </ul>
           </p>
         </div>
@@ -133,11 +133,6 @@ export default {
     },
     async createTag (tagId) {
       await this.createTagAction({ id: tagId })
-    },
-    blurFilterWorkaround () { // TODO
-      setTimeout(() => {
-        this.tagInput.focus = false
-      }, 200)
     },
     ...mapActions({ createTagAction: 'createTag' })
   }
