@@ -54,37 +54,6 @@ export async function deleteToken ({ db }, token) {
   return result.changes === 1
 }
 
-/* Tags */
-
-/**
- * This function deletes a tag in the database
- * @param {db: Database} $deps dependencies
- * @param {string} tagId the tag to delete
- * @returns {Promise} promise, to be resolved on success with a successful bool or rejected on failure
- */
-export async function deleteTag ({ db }, tagId) {
-  const result = await db.run(
-    'DELETE FROM tags WHERE id = ?',
-    tagId
-  )
-  return result.changes === 1
-}
-
-export async function addTagToNode ({ db }, nodeTag) {
-  await db.run(
-    'INSERT INTO nodes_tags (node_id, tag_id) VALUES (?, ?)',
-    nodeTag.nodeId, nodeTag.tagId
-  )
-}
-
-export async function deleteTagFromNode ({ db }, nodeTagId) {
-  const result = await db.run(
-    'DELETE FROM nodes_tags WHERE id = ?',
-    nodeTagId
-  )
-  return result.changes === 1
-}
-
 /* Devices */
 
 /**
@@ -106,6 +75,18 @@ export async function syncInfrastructure ({ db }, infrastructure) {
       `, {
         ':id': tag.id
       })
+  }
+
+  const tagsInDb = await db.all(
+    `SELECT * FROM tags`
+  )
+
+  const tagsIdsToDelete = tagsInDb.filter(tag => !infrastructure.hasTag(tag.id)).map(tag => tag.id)
+  for (let tagIdToDelete of tagsIdsToDelete) {
+    await db.run(
+      'DELETE FROM tags WHERE id = ?',
+      tagIdToDelete
+    )
   }
 
   /* Synchronize devices */
@@ -204,6 +185,19 @@ export async function syncInfrastructure ({ db }, infrastructure) {
             ':node_id': nodeId,
             ':tag_id': tag.id
           })
+      }
+
+      const nodeTagsInDb = await db.all(
+        `SELECT * FROM nodes_tags WHERE node_id = ?`,
+        nodeId
+      )
+
+      const nodeTagsIdsToDelete = nodeTagsInDb.filter(nodeTag => !node.hasTag(infrastructure.getTag(nodeTag.tag_id))).map(nodeTag => nodeTag.id)
+      for (let nodeTagIdToDelete of nodeTagsIdsToDelete) {
+        await db.run(
+          'DELETE FROM nodes_tags WHERE id = ?',
+          nodeTagIdToDelete
+        )
       }
 
       /* syncing properties */

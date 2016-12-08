@@ -72,6 +72,25 @@ export default class Client extends EventEmitter {
       this.infrastructure.addTag(tag)
 
       this._sendResponse(message, true)
+    } else if (message.method === 'toggleTag') {
+      const deviceId = message.parameters.deviceId
+      const nodeId = message.parameters.nodeId
+      const tagId = message.parameters.tagId
+      const operationAdd = message.parameters.operationAdd
+
+      const node = this.infrastructure.getDevice(deviceId).getNode(nodeId)
+      const tag = this.infrastructure.getTag(tagId)
+
+      if (operationAdd) node.addTag(tag)
+      else node.deleteTag(tag)
+
+      this._sendResponse(message, true)
+    } else if (message.method === 'deleteTag') {
+      const tagId = message.parameters.tagId
+
+      this.infrastructure.deleteTag(tagId)
+
+      this._sendResponse(message, true)
     }
   }
 }

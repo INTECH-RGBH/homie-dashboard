@@ -60,7 +60,7 @@ class Infrastructure extends EventEmitter {
    * @returns {bool} whether or not the tag exists
    */
   hasTag (tagId) {
-    return this._devices.has(tagId)
+    return this._tags.has(tagId)
   }
 
   /**
@@ -84,6 +84,10 @@ class Infrastructure extends EventEmitter {
     return this._tags.get(tagId)
   }
 
+  deleteTag (tagId) {
+    this._tags.delete(tagId)
+    this._wasUpdated()
+  }
   /**
    * Gets all tags from the infrastructure
    * @returns {Iterable.<Tag>} the tags

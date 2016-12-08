@@ -12,12 +12,12 @@
             <input v-model="tagInput.value" @focus="tagInput.focus = true" @blur="tagInput.focus = false" class="input" type="text" placeholder="Filtrer ou créer un tag">
             <ul v-if="tagInput.focus == true" id="autocomplete-dropdown">
               <li v-if="tagInput.value !== ''"><a href="" @click.prevent @mousedown.prevent="createTag(tagInput.value)"><span class="icon is-small"><i class="fa fa-plus"></i></span> Créer le tag <b>{{ tagInput.value }}</b></a></li>
-              <li v-for="tag in dropdownTags"><a href="" @click.prevent @mousedown.prevent="addTag(tag)"><span class="tag"><span class="icon is-small"><i class="fa fa-tag"></i></span>&nbsp;{{ tag.id }}</span></a></li>
+              <li v-for="tag in dropdownTags"><a href="" @click.prevent @mousedown.prevent="addTag(tag)"><span class="tag"><span class="icon is-small"><i class="fa fa-tag"></i></span>&nbsp;{{ tag.id }}<span :data-balloon="canDeleteTag(tag.id) ? 'Supprimer le tag' : 'Impossible de supprimer ce tag car il est encore affecté'" data-balloon-pos="right"><button @mousedown.prevent.stop="deleteTag(tag.id)" class="delete is-small" :disabled="!canDeleteTag(tag.id)"></button></span></span></a></li>
             </ul>
           </p>
         </div>
         <div class="level-item">
-          <span v-for="id in selectedTagsIds" class="tag"><span class="icon is-small"><i class="fa fa-tag"></i></span>&nbsp;{{ infrastructure.tags[id].id }}<button @click="deleteTag(id)" class="delete is-small"></button></span>
+          <span v-for="id in selectedTagsIds" class="tag"><span class="icon is-small"><i class="fa fa-tag"></i></span>&nbsp;{{ infrastructure.tags[id].id }}<button @click="removeCurrentTag(id)" class="delete is-small"></button></span>
         </div>
       </div>
 
@@ -128,13 +128,25 @@ export default {
     addTag (tag) {
       this.selectedTagsIds.push(tag.id)
     },
-    deleteTag (tagId) {
+    removeCurrentTag (tagId) {
       this.selectedTagsIds.splice(this.selectedTagsIds.indexOf(tagId), 1)
     },
     async createTag (tagId) {
       await this.createTagAction({ id: tagId })
     },
-    ...mapActions({ createTagAction: 'createTag' })
+    canDeleteTag (tagId) {
+      for (let device of Object.values(this.infrastructure.devices)) {
+        for (let node of Object.values(device.nodes)) {
+          if (node.tags.includes(tagId)) return false
+        }
+      }
+
+      return true
+    },
+    async deleteTag (tagId) {
+      await this.deleteTagAction({ tagId: tagId })
+    },
+    ...mapActions({ createTagAction: 'createTag', deleteTagAction: 'deleteTag' })
   }
 }
 

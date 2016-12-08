@@ -44,7 +44,7 @@ export default function initializeStore (app) {
         jsonpatch.apply(state.infrastructure, patch)
 
         for (const op of patch) {
-          if (op.op === 'add') {
+          if (op.op === 'add' || op.op === 'remove') {
             state.infrastructure = JSON.parse(JSON.stringify(state.infrastructure))
             break
           }
@@ -94,6 +94,31 @@ export default function initializeStore (app) {
           method: 'createTag',
           parameters: {
             id: opts.id
+          }
+        })
+
+        return result
+      },
+      async toggleTag ({commit}, opts) {
+        const result = await wsRequest({
+          ws,
+          method: 'toggleTag',
+          parameters: {
+            deviceId: opts.deviceId,
+            nodeId: opts.nodeId,
+            tagId: opts.tagId,
+            operationAdd: opts.operationAdd
+          }
+        })
+
+        return result
+      },
+      async deleteTag ({commit}, opts) {
+        const result = await wsRequest({
+          ws,
+          method: 'deleteTag',
+          parameters: {
+            tagId: opts.tagId
           }
         })
 
