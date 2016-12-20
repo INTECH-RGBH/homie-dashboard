@@ -30,17 +30,19 @@
   ],
   "dependencies": {
     "body-parser": "^1.15.2",
+    "bookshelf": "^0.10.2",
     "bunyan": "^1.8.4",
     "cookie": "^0.3.1",
     "dotenv": "^2.0.0",
     "express": "^4.14.0",
     "fast-json-patch": "^1.1.2",
+    "knex": "^0.12.6",
     "mqtt": "^2.0.1",
-    "sqlite": "^2.2.2",
+    "sqlite3": "^3.1.8",
     "toml": "^2.3.0",
     "uuid": "^3.0.0",
-    "ws": "^1.1.1",
-    "vue-color": "^2.0.2"
+    "vue-color": "^2.0.2",
+    "ws": "^1.1.1"
   },
   "devDependencies": {
     "ava": "^0.17.0",
@@ -54,6 +56,7 @@
     "bulma": "^0.2.3",
     "coveralls": "^2.11.15",
     "cross-env": "^3.1.3",
+    "depcheck": "^0.6.7",
     "eva.js": "^1.1.1",
     "eventemitter3": "^2.0.2",
     "font-awesome": "^4.7.0",
@@ -86,6 +89,7 @@
   "scripts": {
     "app-build": "cross-env BABEL_ENV=production vbuild",
     "app-dev": "vbuild --dev",
+    "common-depcheck": "depcheck",
     "emulator-start": "babel-watch emulator/index.js | bunyan",
     "server-build": "cross-env BABEL_ENV=production babel server/ -d dist-server/src/ && shx cp package.json dist-server/",
     "server-dev": "babel-watch server/index.js | bunyan",

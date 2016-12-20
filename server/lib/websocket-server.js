@@ -1,9 +1,10 @@
 import {createServer} from 'http'
 import cookie from 'cookie'
 import express from 'express'
+import uuid from 'uuid'
 import bodyParser from 'body-parser'
 import {Server as WebSocketServer} from 'ws'
-import {createAuthToken, checkToken, deleteToken} from '../services/database'
+import AuthTokenModel from '../models/AuthToken'
 
 /**
  * This function creates a WebSocket server.
@@ -27,7 +28,8 @@ export default function createWebsocketServer (opts) {
 
     app.post('/login', async function (req, res) {
       if (req.body.password === opts.settings.password) {
-        const token = await createAuthToken(opts)
+        const token = uuid()
+        await AuthTokenModel.forge({ token }).save(null, { method: 'insert' }) // we insert primary key so considered update by default
         const never = new Date(253402300000000) // year 999
         return res.cookie('ACCESSTOKEN', token, {
           expires: never,
@@ -41,9 +43,8 @@ export default function createWebsocketServer (opts) {
     app.post('/logout', async function (req, res) {
       const cookies = req.headers.cookie ? cookie.parse(req.headers.cookie) : null
       if (!cookies || !cookies['ACCESSTOKEN']) return res.sendStatus(401)
-      const doesExist = await deleteToken(opts, cookies['ACCESSTOKEN'])
-      if (doesExist) res.clearCookie('ACCESSTOKEN').sendStatus(204)
-      else return res.sendStatus(401)
+      await AuthTokenModel.forge({ token: cookies['ACCESSTOKEN'] }).destroy()
+      res.clearCookie('ACCESSTOKEN').sendStatus(204)
     })
 
     httpServer.on('request', app)
@@ -54,8 +55,8 @@ export default function createWebsocketServer (opts) {
         const fail = () => cb(false, 401, 'Unauthorized')
         const cookies = info.req.headers.cookie ? cookie.parse(info.req.headers.cookie) : null
         if (!cookies || !cookies['ACCESSTOKEN']) return fail()
-        const isValidToken = await checkToken(opts, cookies['ACCESSTOKEN'])
-        if (isValidToken) return cb(true)
+        const tokenInDb = await AuthTokenModel.forge({ token: cookies['ACCESSTOKEN'] }).fetch()
+        if (tokenInDb) return cb(true)
         else return fail()
       }
     })

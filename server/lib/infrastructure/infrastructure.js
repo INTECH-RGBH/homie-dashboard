@@ -34,6 +34,9 @@ class Infrastructure extends EventEmitter {
    */
   addDevice (device) {
     this._devices.set(device.id, device)
+    device.on('valid', () => {
+      this.emit('newDevice', device)
+    })
     device.on('update', (update) => {
       this.emit('update', update)
     })
@@ -137,7 +140,7 @@ class Infrastructure extends EventEmitter {
   }
 
   _wasUpdated () {
-    this.emit('update', { type: 'infrastructure' })
+    this.emit('update', { entity: this })
   }
 
   toJSON () {

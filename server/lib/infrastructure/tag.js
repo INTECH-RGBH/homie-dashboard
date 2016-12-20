@@ -11,6 +11,8 @@ export default class Tag extends EventEmitter {
 
     this.isValid = false
 
+    this.model = null
+
     Object.seal(this)
   }
 
@@ -29,7 +31,7 @@ export default class Tag extends EventEmitter {
 
     if (!wasValid && this.isValid) this.emit('valid')
 
-    if (this.isValid) this.emit('update', { type: 'tag' })
+    if (this.isValid) this.emit('update', { entity: this })
   }
 
   toJSON () {

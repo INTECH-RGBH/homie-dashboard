@@ -59,7 +59,7 @@ export default class Floor extends EventEmitter {
 
     if (!wasValid && this.isValid) this.emit('valid')
 
-    if (this.isValid) this.emit('update', { type: 'floor' })
+    if (this.isValid) this.emit('update', { entity: this })
   }
 
   toJSON () {

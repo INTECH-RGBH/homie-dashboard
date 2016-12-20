@@ -1,47 +1,39 @@
-import jsonpatch from 'fast-json-patch'
 import createMqttClient from './lib/mqtt-client'
 import Client from './lib/client'
-import MqttRelay from './lib/mqtt-relay'
+import {bridgeMqttToInfrastructure} from './lib/bridges/mqtt-infrastructure'
+import {bridgeInfrastructureToDatabase} from './lib/bridges/infrastructure-database'
+import {bridgeInfrastructureToWebsocket} from './lib/bridges/infrastructure-websocket'
 import infrastructure from './lib/infrastructure/infrastructure'
-import {generateMessage, MESSAGE_TYPES} from '../common/ws-messages'
-import {INFRASTRUCTURE_PATCH} from '../common/events'
-import {syncInfrastructure, getInfrastructure} from './services/database'
+import {getInfrastructure} from './services/database'
 
-const DB_SYNC_DELAY = 15 * 1000
+/* Register models */
+
+import './models/AuthToken'
+import './models/Device'
+import './models/Floor'
+import './models/Node'
+import './models/Property'
+import './models/PropertyHistory'
+import './models/Room'
+import './models/Tag'
 
 export default async function start ($deps) {
   /* Populate the infrastructure from the DB */
 
-  await getInfrastructure($deps, infrastructure)
+  await getInfrastructure(infrastructure)
 
   /* Initialize the MQTT client */
 
   const mqttClient = createMqttClient(`mqtt://${$deps.settings.mqtt.host}:${$deps.settings.mqtt.port}`)
 
-  /* Hook the infrastructure to the MQTT */
+  /* Bridge the MQTT to the infrastructure */
 
-  const mqttRelay = new MqttRelay({ $deps, mqttClient, infrastructure }) // eslint-disable-line no-unused-vars
+  bridgeMqttToInfrastructure({ $deps, mqttClient, infrastructure })
 
   /* Handle infrastructure updates */
 
-  let dbSyncDelay
-  let lastInfrastructure = infrastructure.toJSON()
-  infrastructure.on('update', function onUpdate (update) {
-    const currentInfrastructure = infrastructure.toJSON()
-    const patch = jsonpatch.compare(lastInfrastructure, currentInfrastructure)
-    lastInfrastructure = currentInfrastructure
-    const message = generateMessage({ type: MESSAGE_TYPES.EVENT, event: INFRASTRUCTURE_PATCH, value: patch })
-    for (const client of $deps.wss.clients) {
-      client.send(message)
-    }
-
-    if (dbSyncDelay) return
-    dbSyncDelay = setTimeout(async () => {
-      dbSyncDelay = null
-      $deps.log.debug('synchronizing database')
-      await syncInfrastructure($deps, infrastructure)
-    }, DB_SYNC_DELAY)
-  })
+  bridgeInfrastructureToDatabase({ $deps, infrastructure })
+  bridgeInfrastructureToWebsocket({ $deps, infrastructure })
 
   /* Handle WS */
 

@@ -5,6 +5,9 @@ import {INFRASTRUCTURE} from '../../common/events'
 import Tag from './infrastructure/tag'
 import Floor from './infrastructure/floor'
 
+import TagModel from '../models/Tag'
+import FloorModel from '../models/Floor'
+
 /**
  * This class handles WebSocket clients
  * This is where every request gets parsed / responded
@@ -71,6 +74,7 @@ export default class Client extends EventEmitter {
       const tag = new Tag()
       tag.id = tagId
       this.infrastructure.addTag(tag)
+      tag.model = await TagModel.forge({ id: tagId }).save(null, { method: 'insert' })
 
       this._sendResponse(message, true)
     } else if (message.method === 'toggleTag') {
@@ -82,13 +86,20 @@ export default class Client extends EventEmitter {
       const node = this.infrastructure.getDevice(deviceId).getNode(nodeId)
       const tag = this.infrastructure.getTag(tagId)
 
-      if (operationAdd) node.addTag(tag)
-      else node.deleteTag(tag)
+      if (operationAdd) {
+        node.addTag(tag)
+        await node.model.tags().attach(tag.model)
+      } else {
+        node.deleteTag(tag)
+        await node.model.tags().detach(tag.model)
+      }
 
       this._sendResponse(message, true)
     } else if (message.method === 'deleteTag') {
       const tagId = message.parameters.tagId
+      const tag = this.infrastructure.getTag(tagId)
 
+      await tag.model.destroy()
       this.infrastructure.deleteTag(tagId)
 
       this._sendResponse(message, true)
@@ -96,7 +107,8 @@ export default class Client extends EventEmitter {
       const name = message.parameters.name
 
       const floor = new Floor()
-      floor.id = 0
+      floor.model = await FloorModel.forge({ name: floor.name }).save()
+      floor.id = floor.model.id
       floor.name = name
       this.infrastructure.addFloor(floor)
 
