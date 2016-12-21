@@ -42,6 +42,9 @@ export default class Device extends EventEmitter {
     node.on('valid', () => {
       this.emit('newNode', node)
     })
+    node.on('newProperty', (property) => {
+      this.emit('newProperty', property)
+    })
     node.on('update', (update) => {
       this.emit('update', update)
     })

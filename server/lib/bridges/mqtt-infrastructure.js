@@ -21,8 +21,8 @@ export function bridgeMqttToInfrastructure ({$deps, mqttClient, infrastructure})
       let device
       if (!infrastructure.hasDevice(message.deviceId)) {
         device = new Device()
-        infrastructure.addDevice(device)
         device.id = message.deviceId
+        infrastructure.addDevice(device)
       } else device = infrastructure.getDevice(message.deviceId)
 
       switch (message.property) {
@@ -71,9 +71,9 @@ export function bridgeMqttToInfrastructure ({$deps, mqttClient, infrastructure})
       let node
       if (!device.hasNode(message.nodeId)) {
         node = new Node()
+        node.id = message.nodeId
         device.addNode(node)
         node.device = device
-        node.id = message.nodeId
       } else node = device.getNode(message.nodeId)
 
       switch (message.property) {
@@ -95,9 +95,9 @@ export function bridgeMqttToInfrastructure ({$deps, mqttClient, infrastructure})
       let property
       if (!node.hasProperty(message.property)) {
         property = new Property()
+        property.id = message.property
         node.addProperty(property)
         property.node = node
-        property.id = message.property
       } else property = node.getProperty(message.property)
 
       property.value = message.value

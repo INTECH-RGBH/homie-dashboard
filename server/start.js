@@ -26,14 +26,14 @@ export default async function start ($deps) {
 
   const mqttClient = createMqttClient(`mqtt://${$deps.settings.mqtt.host}:${$deps.settings.mqtt.port}`)
 
-  /* Bridge the MQTT to the infrastructure */
-
-  bridgeMqttToInfrastructure({ $deps, mqttClient, infrastructure })
-
   /* Handle infrastructure updates */
 
   bridgeInfrastructureToDatabase({ $deps, infrastructure })
   bridgeInfrastructureToWebsocket({ $deps, infrastructure })
+
+  /* Bridge the MQTT to the infrastructure */
+
+  bridgeMqttToInfrastructure({ $deps, mqttClient, infrastructure })
 
   /* Handle WS */
 

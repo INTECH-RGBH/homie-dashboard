@@ -32,35 +32,37 @@ export function bridgeInfrastructureToDatabase ({$deps, infrastructure}) {
     }).then((model) => {
       device.model = model
     })
-    device.on('newNode', function onNewNode (node) {
-      databaseQueue = databaseQueue.then(() => {
-        $deps.log.debug(`inserting new node ${node.id} into DB`)
-        return NodeModel.forge({
-          device_id: device.id,
-          device_node_id: node.id,
-          type: node.type,
-          properties: node.propertiesDefinition
-        }).save()
-      }).then((model) => {
-        node.model = model
-      })
-      node.on('newProperty', function onNewProperty (property) {
-        databaseQueue = databaseQueue.then(() => {
-          $deps.log.debug(`inserting new property ${property.id} into DB`)
-          return PropertyModel.forge({
-            node_id: node.model.id,
-            node_property_id: property.id
-          }).save()
-        }).then((model) => {
-          property.model = model
+  })
 
-          return PropertyHistoryModel.forge({
-            property_id: property.model.id,
-            value: property.value,
-            date: new Date()
-          }).save()
-        })
-      })
+  infrastructure.on('newNode', function onNewNode (node) {
+    databaseQueue = databaseQueue.then(() => {
+      $deps.log.debug(`inserting new node ${node.id} into DB`)
+      return NodeModel.forge({
+        device_id: node.device.id,
+        device_node_id: node.id,
+        type: node.type,
+        properties: node.propertiesDefinition
+      }).save()
+    }).then((model) => {
+      node.model = model
+    })
+  })
+
+  infrastructure.on('newProperty', function onNewProperty (property) {
+    databaseQueue = databaseQueue.then(() => {
+      $deps.log.debug(`inserting new property ${property.id} into DB`)
+      return PropertyModel.forge({
+        node_id: property.node.model.id,
+        node_property_id: property.id
+      }).save()
+    }).then((model) => {
+      property.model = model
+
+      return PropertyHistoryModel.forge({
+        property_id: property.model.id,
+        value: property.value,
+        date: new Date()
+      }).save()
     })
   })
 
