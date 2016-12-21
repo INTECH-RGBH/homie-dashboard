@@ -65,6 +65,7 @@ export default class Floor extends EventEmitter {
   toJSON () {
     const representation = { rooms: {} }
     representation.name = this.name
+    representation.id = this.id
     for (const room of this.getRooms()) {
       if (room.isValid) representation.rooms[room.id] = room.toJSON()
     }
