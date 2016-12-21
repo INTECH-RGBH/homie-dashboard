@@ -1,0 +1,25 @@
+FROM resin/armhf-alpine-node:6-slim
+
+# Home directory for homie-dashboard source code
+RUN mkdir -p /usr/src/homie-dashboard
+
+# User data directory
+RUN mkdir -p /data
+
+WORKDIR /usr/src/homie-dashboard
+
+# Add node-red user so we aren't running as root
+RUN adduser -h /usr/src/homie-dashboard -D -H homie-dashboard \
+    && chown -R homie-dashboard:homie-dashboard /data \
+    && chown -R homie-dashboard:homie-dashboard /usr/src/homie-dashboard
+
+USER homie-dashboard
+
+ADD dist-server /usr/src/homie-dashboard
+RUN npm install
+
+VOLUME ["/data"]
+
+EXPOSE 80
+
+CMD ["npm", "start"]
