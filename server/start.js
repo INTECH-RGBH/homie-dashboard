@@ -8,14 +8,14 @@ import {getInfrastructure} from './services/database'
 
 /* Register models */
 
-import './models/AuthToken'
-import './models/Device'
-import './models/Floor'
-import './models/Node'
-import './models/Property'
-import './models/PropertyHistory'
-import './models/Room'
-import './models/Tag'
+import './models/auth-token'
+import './models/device'
+import './models/floor'
+import './models/node'
+import './models/property'
+import './models/property-history'
+import './models/room'
+import './models/tag'
 
 export default async function start ($deps) {
   /* Populate the infrastructure from the DB */

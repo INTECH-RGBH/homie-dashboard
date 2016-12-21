@@ -5,8 +5,8 @@ import {INFRASTRUCTURE} from '../../common/events'
 import Tag from './infrastructure/tag'
 import Floor from './infrastructure/floor'
 
-import TagModel from '../models/Tag'
-import FloorModel from '../models/Floor'
+import TagModel from '../models/tag'
+import FloorModel from '../models/floor'
 
 /**
  * This class handles WebSocket clients

@@ -5,9 +5,9 @@ import Tag from '../lib/infrastructure/tag'
 import Floor from '../lib/infrastructure/floor'
 import Room from '../lib/infrastructure/room'
 
-import DeviceModel from '../models/Device'
-import TagModel from '../models/Tag'
-import FloorModel from '../models/Floor'
+import DeviceModel from '../models/device'
+import TagModel from '../models/tag'
+import FloorModel from '../models/floor'
 
 /**
  * This function synchronizes the database with the infrastructure.

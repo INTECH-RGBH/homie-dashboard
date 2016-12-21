@@ -4,7 +4,7 @@ import express from 'express'
 import uuid from 'uuid'
 import bodyParser from 'body-parser'
 import {Server as WebSocketServer} from 'ws'
-import AuthTokenModel from '../models/AuthToken'
+import AuthTokenModel from '../models/auth-token'
 
 /**
  * This function creates a WebSocket server.
