@@ -33,7 +33,6 @@ class Infrastructure extends EventEmitter {
    * @param {Device} device
    */
   addDevice (device) {
-    console.log()
     this._devices.set(device.id, device)
     device.on('valid', () => {
       this.emit('newDevice', device)

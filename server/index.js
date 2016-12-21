@@ -1,14 +1,12 @@
-import dotenv from 'dotenv'
-
-import {knex} from './lib/database'
+import path from 'path'
+import Knex from 'knex'
+import {bookshelf} from './lib/database'
 import log from './lib/log'
 import createWebsocketServer from './lib/websocket-server'
 import start from './start'
 import loadSettings from './lib/settings'
 
-dotenv.config()
-
-async function wrapper () {
+export async function bootstrap (opts) {
   log.info('starting')
 
   let settings
@@ -19,6 +17,15 @@ async function wrapper () {
     log.fatal('cannot load settings', err)
     process.exit(1)
   }
+
+  const knex = new Knex({
+    client: 'sqlite3',
+    connection: {
+      filename: path.join(opts.dataDir, './homie-dashboard.db')
+    },
+    useNullAsDefault: true
+  })
+  bookshelf.knex = knex
 
   try {
     await knex.raw('PRAGMA foreign_keys=ON')
@@ -33,8 +40,8 @@ async function wrapper () {
 
   let wss
   try {
-    wss = await createWebsocketServer({ ip: process.env.WS_API_IP, port: parseInt(process.env.WS_API_PORT, 10), settings })
-    log.info(`listening on ${process.env.WS_API_IP}:${process.env.WS_API_PORT}`)
+    wss = await createWebsocketServer({ ip: opts.ip, port: opts.port, settings })
+    log.info(`listening on ${opts.ip}:${opts.port}`)
   } catch (err) {
     log.fatal('cannot start server', err)
     process.exit(1)
@@ -42,8 +49,3 @@ async function wrapper () {
 
   start({ log, wss, settings })
 }
-
-wrapper().catch(function onError (err) {
-  log.fatal('unhandled error', err)
-  process.exit(2)
-})

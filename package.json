@@ -32,17 +32,19 @@
     "body-parser": "^1.15.2",
     "bookshelf": "^0.10.2",
     "bunyan": "^1.8.4",
+    "clor": "^2.0.2",
     "cookie": "^0.3.1",
-    "dotenv": "^2.0.0",
     "express": "^4.14.0",
     "fast-json-patch": "^1.1.2",
+    "internal-ip": "^1.2.0",
     "knex": "^0.12.6",
     "mqtt": "^2.0.1",
     "sqlite3": "^3.1.8",
     "toml": "^2.3.0",
     "uuid": "^3.0.0",
     "vue-color": "^2.0.2",
-    "ws": "^1.1.1"
+    "ws": "^1.1.1",
+    "yargs": "^6.5.0"
   },
   "devDependencies": {
     "ava": "^0.17.0",
@@ -86,15 +88,18 @@
     "type": "git",
     "url": "https://github.com/INTECH-RGBH/homie-dashboard.git"
   },
+  "bin": {
+    "homie-dashboard": "./bin/cli.js"
+  },
+  "preferGlobal": true,
   "scripts": {
     "app-build": "cross-env BABEL_ENV=production vbuild",
     "app-dev": "vbuild --dev",
     "common-depcheck": "depcheck",
     "emulator-start": "babel-watch emulator/index.js | bunyan",
     "server-build": "cross-env BABEL_ENV=production babel server/ -d dist-server/src/ && shx cp package.json dist-server/",
-    "server-dev": "babel-watch server/index.js | bunyan",
+    "server-dev": "babel-watch server/bin/cli.js | bunyan",
     "server-lint": "standard server/**/*.js | snazzy",
-    "server-serve": "node src/index.js",
     "server-test": "nyc ava"
   }
 }

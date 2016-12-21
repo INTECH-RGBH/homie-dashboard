@@ -1,7 +1,4 @@
-import Knex from 'knex'
 import Bookshelf from 'bookshelf'
-import knexConfig from '../../knexfile'
 
-export const knex = new Knex(knexConfig)
-export const bookshelf = new Bookshelf(knex)
+export const bookshelf = new Bookshelf()
 bookshelf.plugin('registry')
