@@ -10,7 +10,7 @@ test-and-build:
     - script:
         name: set Yarn cache
         code: |
-          yarn config set --cache-folder $WERCKER_CACHE_DIR/yarn
+          yarn config set cache-folder $WERCKER_CACHE_DIR/yarn
 
     - script:
         name: install dependencies
