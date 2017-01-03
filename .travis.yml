@@ -1,3 +1,6 @@
+sudo: required
+services:
+  - docker
 language: node_js
 node_js:
   - 7
@@ -24,3 +27,8 @@ script:
 
 after_success:
   - if [[ "$SIDE" == "server" ]]; then ./node_modules/.bin/nyc report --reporter=text-lcov | ./node_modules/.bin/coveralls; fi
+  - >
+    if [[ "$SIDE" == "server" ]]; then
+      docker run --rm --privileged multiarch/qemu-user-static:register --reset
+      docker build -t homiedashboard/armhf -f Dockerfile.armhf .
+    fi
