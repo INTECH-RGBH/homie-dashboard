@@ -30,5 +30,5 @@ after_success:
   - >
     if [[ "$SIDE" == "server" ]]; then
       docker run --rm --privileged multiarch/qemu-user-static:register --reset
-      docker build -t homiedashboard/armhf -f Dockerfile.armhf .
+      travis_wait 60 docker build -t homiedashboard/armhf -f Dockerfile.armhf .
     fi
