@@ -75,7 +75,8 @@
     "shx": "^0.2.0",
     "snazzy": "^5.0.0",
     "standard": "^8.5.0",
-    "vbuild": "^4.0.0",
+    "vbuild": "^5.0.0",
+    "vue": "^2.1.8",
     "vue-loader": "^10.0.2",
     "vue-template-compiler": "^2.1.6"
   },
