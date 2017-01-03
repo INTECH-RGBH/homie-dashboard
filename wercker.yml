@@ -10,12 +10,12 @@ test-and-build:
     - script:
         name: set Yarn cache
         code: |
-          export YARN_CACHE=$WERCKER_CACHE_DIR/yarn
+          yarn config set --cache-folder $WERCKER_CACHE_DIR/yarn
 
     - script:
         name: install dependencies
         code: |
-          HOME=$YARN_CACHE yarn
+          yarn
 
     - script:
         name: lint server
