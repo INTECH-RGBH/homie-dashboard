@@ -8,7 +8,7 @@
           </h1>
           <i class="fa fa-circle-o-notch fa-spin fa-3x fa-fw"></i><br><br>
           <h2 class="subtitle">
-            Si votre périphérique est <strong>Homie-123456abcdef</strong>, le mot de passe est <strong>123456abcdef</strong>.
+            Le nom du réseau Wi-Fi est de la forme <strong>Homie-123456abcdef</strong>.
           </h2>
         </div>
       </div>
@@ -23,8 +23,25 @@
           <h2 class="subtitle">
             Souhaitez-vous ajouter ce périphérique ?
           </h2>
-          <a :class="{button: true, 'is-success': true, 'is-loading': putRequestOngoing}" @click.prevent="sendConfiguration">Oui</a>
-          <a v-if="!putRequestOngoing" class="button is-black" @click.prevent="step = 'ABORTED'">Non</a>
+          <a class="button is-success" @click.prevent="STEP = 'INPUT_DEVICE_NAME'">Oui</a>
+          <a class="button is-black" @click.prevent="step = 'ABORTED'">Non</a>
+        </div>
+      </div>
+    </template>
+
+    <template v-if="step === 'INPUT_DEVICE_NAME'">
+      <div class="hero-body">
+        <div class="container has-text-centered">
+          <h1 class="title">
+            Entrez un nom pour le périphérique.
+          </h1>
+
+          <p class="control has-icon">
+            <input v-model="deviceName" class="input is-medium" type="text" placeholder="Nom du périphérique">
+            <i class="fa fa-hashtag"></i>
+          </p>
+
+          <a :disabled="deviceName === ''" :class="{button: true, 'is-loading': putConfigOngoing}" @click.prevent="sendConfiguration">OK</a>
         </div>
       </div>
     </template>
@@ -64,12 +81,14 @@
 
 <script>
 import axios from 'axios'
+import {mapActions} from 'eva.js'
 
-import constants from '../../constants'
+import {HOMIE_ESP8266_AP_SERVER_URL} from '../../constants'
 
 const STEPS = {
   WAITING_FOR_DEVICE: 'WAITING_FOR_DEVICE',
   ADD_DEVICE_CONFIRMATION: 'ADD_DEVICE_CONFIRMATION',
+  INPUT_DEVICE_NAME: 'INPUT_DEVICE_NAME',
   SEND_CONFIG_RESULT: 'SEND_CONFIG_RESULT',
   ABORTED: 'ABORTED'
 }
@@ -80,57 +99,67 @@ export default {
       step: STEPS.WAITING_FOR_DEVICE,
       deviceInfo: {},
       deviceInfoRequestOngoing: false,
+      deviceName: '',
       interval: null,
       putConfigResult: {},
-      putRequestOngoing: false
+      putConfigOngoing: false
     }
   },
   mounted () {
     this.interval = setInterval(this.checkHeartbeat, 2000)
   },
   methods: {
-    checkHeartbeat () {
+    async checkHeartbeat () {
       if (this.deviceInfoRequestOngoing) return
 
-      this.deviceInfoRequestOngoing = true
-      axios.get(`${constants.HOMIE_ESP8266_AP_SERVER_URL}/device-info`).then((res) => {
+      try {
+        this.deviceInfoRequestOngoing = true
+        const res = await axios.get(`${HOMIE_ESP8266_AP_SERVER_URL}/device-info`)
         clearInterval(this.interval)
         this.deviceInfo = res.data
-        console.log(this.deviceInfo)
         this.step = STEPS.ADD_DEVICE_CONFIRMATION
-      }).catch((err) => {
+      } catch (err) {
         console.log(err)
+      } finally {
         this.deviceInfoRequestOngoing = false
-      })
+      }
     },
-    sendConfiguration () {
-      if (this.putRequestOngoing) return
+    async sendConfiguration () {
+      if (this.putConfigOngoing) return
 
-      this.putRequestOngoing = true
-      axios.put(`${constants.HOMIE_ESP8266_AP_SERVER_URL}/config`, {
-        name: 'Dashboard test device',
-        wifi: {
-          ssid: 'SSID',
-          password: 'password'
-        },
-        mqtt: {
-          host: 'host'
-        },
-        ota: {
-          enabled: true
-        }
-      }).then((res) => {
+      const settings = await this.getHomieEsp8266Settings()
+      console.log(settings)
+
+      try {
+        this.putConfigOngoing = true
+        const res = await axios.put(`${HOMIE_ESP8266_AP_SERVER_URL}/config`, {
+          name: this.deviceName,
+          wifi: {
+            ssid: settings.wifi.ssid,
+            password: settings.wifi.password
+          },
+          mqtt: {
+            host: settings.mqtt.host,
+            port: settings.mqtt.port
+          },
+          ota: {
+            enabled: true
+          }
+        })
         this.putConfigResult = res.data
         this.step = STEPS.SEND_CONFIG_RESULT
-      }).catch((err) => {
+      } catch (err) {
         if (err.response) this.putConfigResult = err.response.data
         else this.putConfigResult = { error: err.message }
         this.step = STEPS.SEND_CONFIG_RESULT
-      })
+      } finally {
+        this.putConfigOngoing = false
+      }
     },
     close () {
       window.close()
-    }
+    },
+    ...mapActions(['getHomieEsp8266Settings'])
   }
 }
 </script>

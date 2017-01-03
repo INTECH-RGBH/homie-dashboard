@@ -140,6 +140,8 @@ export default class Client extends EventEmitter {
       floor.addRoom(room)
 
       this._sendResponse(message, true)
+    } else if (message.method === 'getHomieEsp8266Settings') {
+      this._sendResponse(message, this.$deps.settings['homie-esp8266'])
     }
   }
 }

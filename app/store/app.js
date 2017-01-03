@@ -138,7 +138,6 @@ export default function initializeStore (app) {
         })
         return result
       },
-
       async addFloor ({commit}, opts) {
         const result = await wsRequest({
           ws,
@@ -150,7 +149,6 @@ export default function initializeStore (app) {
 
         return result
       },
-
       async deleteFloor ({commit}, opts) {
         const result = await wsRequest({
           ws,
@@ -158,6 +156,15 @@ export default function initializeStore (app) {
           parameters: {
             floorId: opts.floorId
           }
+        })
+
+        return result
+      },
+      async getHomieEsp8266Settings ({commit}, opts) {
+        const result = await wsRequest({
+          ws,
+          method: 'getHomieEsp8266Settings',
+          parameters: null
         })
 
         return result

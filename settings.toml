@@ -14,4 +14,5 @@ port = 1883
   password = "password"
 
   [homie-esp8266.mqtt]
-  host = "192.168.1.10" #
+  host = "192.168.1.10"
+  port = 1883
