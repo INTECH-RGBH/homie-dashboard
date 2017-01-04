@@ -1,6 +1,3 @@
-sudo: required
-services:
-  - docker
 language: node_js
 node_js:
   - 7
@@ -20,15 +17,53 @@ install:
   - yarn install
 
 script:
-  - if [[ "$SIDE" == "server" ]]; then npm run server-lint; fi
-  - if [[ "$SIDE" == "server" ]]; then npm run server-test; fi
-  - if [[ "$SIDE" == "server" ]]; then npm run server-build; fi
-  - if [[ "$SIDE" == "app" ]]; then npm run app-build; fi
-
-after_success:
-  - if [[ "$SIDE" == "server" ]]; then ./node_modules/.bin/nyc report --reporter=text-lcov | ./node_modules/.bin/coveralls; fi
   - >
     if [[ "$SIDE" == "server" ]]; then
-      docker run --rm --privileged multiarch/qemu-user-static:register --reset
-      travis_wait 60 docker build -t homiedashboard/armhf -f Dockerfile.armhf .
+      npm run server-lint
+      npm run server-test
+      npm run server-build
     fi
+  - >
+    if [[ "$SIDE" == "app" ]]; then
+      npm run app-build
+    fi
+
+after_success:
+  - >
+    if [[ "$SIDE" == "server" ]]; then
+      ./node_modules/.bin/nyc report --reporter=text-lcov | ./node_modules/.bin/coveralls
+    fi
+
+before_deploy:
+  - cd dist-server
+
+deploy:
+  skip_cleanup: true
+  on:
+    branch: master
+    tags: true
+    node: 7
+    condition: "$SIDE" == "server"
+  provider: npm
+  api_key: "$NPM_TOKEN"
+
+after_deploy:
+  - >
+    body='{
+      "request": {
+        "branch": "master",
+        "config": {
+          "env": {
+            "global": ["VERSION=\"'"$TRAVIS_TAG"'\""]
+          }
+        }
+      }
+    }'
+
+    curl -s -X POST \
+      -H "Content-Type: application/json" \
+      -H "Accept: application/json" \
+      -H "Travis-API-Version: 3" \
+      -H "Authorization: token $TRAVIS_TOKEN" \
+      -d "$body" \
+      https://api.travis-ci.org/repo/INTECH-RGBH%2Fhomie-dashboard-docker/requests
