@@ -43,7 +43,7 @@ deploy:
     branch: master
     tags: true
     node: 7
-    condition: "$SIDE" == "server"
+    condition: "$SIDE == server"
   provider: npm
   api_key: "$NPM_TOKEN"
 
