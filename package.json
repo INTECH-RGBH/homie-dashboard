@@ -38,7 +38,7 @@
   "dependencies": {
     "body-parser": "^1.15.2",
     "bookshelf": "^0.10.2",
-    "clor": "^2.0.2",
+    "clor": "^3.0.0",
     "cookie": "^0.3.1",
     "express": "^4.14.0",
     "fast-json-patch": "^1.1.2",
