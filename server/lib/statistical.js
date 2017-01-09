@@ -1,114 +1,68 @@
-import NodeModel from '../models/node'
-import PropertyModel from '../models/property'
-import PropertyHistoryModel from '../models/property-history'
+import { bookshelf } from './database'
 
 export default class Statistical {
     constructor(opts)
     {
         this.opts = opts
+        this.knex = bookshelf.knex
     }
     
 
     async getStatDevice(id, interval){
-        var dataReturn = []
-        
-        await NodeModel.query({where: {device_node_id: id}}).fetch()
-        .then(async (node_models) => {
-            await PropertyModel.query({where: {node_id: node_models.attributes["id"]}}).fetchAll().then(async (property_node) => {
-              for(const propertyInDb of property_node.models)
-              {
-                 await PropertyHistoryModel.query({where: {property_id: propertyInDb.attributes["id"]}}).fetchAll().then(async (result) => {
-                        
-                        for(const resultInDb of result.models)
-                        {
-                            dataReturn.push({
-                                id: resultInDb.attributes["id"],
-                                property_id: resultInDb.attributes["property_id"],
-                                node_property_id: propertyInDb.attributes["node_property_id"],
-                                value: resultInDb.attributes["value"],
-                                date: resultInDb.attributes["date"]
-                            })
-                        }
-                })
-              }
-              
-            })
-        })
         switch(interval){
             case "day":
-            dataReturn = this.parseByDay(dataReturn)
+
+            var actualDate = new Date()
+
+            actualDate = (actualDate.getFullYear() + "-" + ("0" + (actualDate.getMonth()+1)).substr(actualDate.getMonth().toString().length - 1) 
+                                + "-" + ("0" + actualDate.getDate()).substr(actualDate.getDate().toString().length - 1) ) 
+                                
+            var result = await this.knex.select(this.knex.raw("DATE(property_history.date/1000, 'unixepoch') as day"),
+                                                this.knex.raw("strftime('%H', datetime(property_history.date / 1000, 'unixepoch')) as hour"),
+                                                this.knex.raw("property_history.property_id as property_id"),
+                                                this.knex.raw("properties.node_property_id"),
+                                                this.knex.raw("MIN(CAST(property_history.value AS NUMERIC)) AS minimum"),
+                                                //this.knex.raw("CASE WHEN properties.node_property_id = 'color' THEN (avg(CAST(substr( property_history.value , ',', 1 ) AS NUMERIC))  + ',' +  avg(CAST(substr(substr(property_history.value , ',', 2 ),',',-1) AS NUMERIC)) + ',' + avg(CAST(substr(property_history.value , ',', -1 ) AS NUMERIC))) ELSE avg(CAST(property_history.value AS NUMERIC)) END AS average"),
+                                                this.knex.raw("avg(CAST(property_history.value AS NUMERIC)) AS average"),
+                                                this.knex.raw("MAX(CAST(property_history.value AS NUMERIC)) AS maximum"))
+                                            .from("property_history").join("properties", "property_history.property_id", "properties.id").join("nodes", "properties.node_id", "nodes.id")
+                                            .where("nodes.device_node_id", id)
+                                            .where('day', actualDate)
+                                            .groupBy("day", "hour", "property_id")
+                                            .orderBy("day", "hour", 'ASC')
+            return result     
             break
+
             case "week":
-            dataReturn = this.parseByWeek(dataReturn)
-            break
-            default: 
-            break
-        }
-        return dataReturn
-       
-    }
 
-    timeConverter(UNIX_timestamp, interval){
-        var a = new Date(UNIX_timestamp );
-        var days = ["Lundi", "Mardi", "Mercredi", "Jeudi", "Vendredi", "Samedi", "Dimanche"]
+            var dateInterval = []
+            var actualDate = new Date()
+            var lastDate = new Date(actualDate.getTime() - (86400000 * 7))
 
-        var year = a.getFullYear();
-        var month = a.getMonth();
-        var date = a.getDate();
-        var hour = a.getHours();
-        var min = a.getMinutes();
-        var sec = a.getSeconds();
-        var day = days[a.getDay()];
+            dateInterval.push(lastDate.getFullYear() + "-" + ("0" + (lastDate.getMonth()+1)).substr(lastDate.getMonth().toString().length - 1 ) 
+                                + "-" + ("0" + lastDate.getDate()).substr(lastDate.getDate().toString().length - 1 ) ) 
+            dateInterval.push(actualDate.getFullYear() + "-" + ("0" + (actualDate.getMonth()+1)).substr(actualDate.getMonth().toString().length - 1) 
+                                + "-" + ("0" + actualDate.getDate()).substr(actualDate.getDate().toString().length - 1) ) 
 
-        switch(interval){
-            case 'day':
-            var time =  day + ' à ' + hour
+            var result = await this.knex.select(this.knex.raw("DATE(property_history.date/1000, 'unixepoch') as day"),
+                                                this.knex.raw("property_history.property_id as property_id"),
+                                                this.knex.raw("properties.node_property_id"),
+                                                this.knex.raw("MIN(CAST(property_history.value AS NUMERIC)) AS minimum"),
+                                                this.knex.raw("avg(CAST(property_history.value AS NUMERIC)) AS average"),
+                                                this.knex.raw("MAX(CAST(property_history.value AS NUMERIC)) AS maximum"))
+                                            .from("property_history").join("properties", "property_history.property_id", "properties.id").join("nodes", "properties.node_id", "nodes.id")
+                                            .where("nodes.device_node_id", id)
+                                            .whereBetween('day', dateInterval)
+                                            .groupBy("day","property_id")
+                                            .orderBy("day", 'ASC')
+            return result
             break
-            case 'week':
-            var time = day + ' ' + date
-            break
+
             default:
-            var time = date + ' ' + month + ' ' + year + ' ' + hour + ':' + min + ':' + sec ;
-            break
+            return {}
+            break 
         }
-        return time;
+
     }
 
-    parseByDay(data){
-        var time = Math.round(new Date().getTime() / 1000);
-        var timeLast = time - (24 * 3600);
-
-        var dataTmp = []
-        var dataReturn = []
-
-        data.forEach((element) => {
-            if(Math.round(new Date(element.date).getTime() / 1000) >= timeLast){
-                dataTmp.push({
-                    id: element.id,
-                    property_id: element.property_id,
-                    node_property_id: element.node_property_id,
-                    value: element.value,
-                    date: this.timeConverter(element.date, 'day')
-                })
-            }
-        })
-        var d3 = require("d3");
-
-        var expenses = d3.nest()
-        .key(function(d) { return d.date; })
-        .key(function(d) { return d.property_id; })
-        .rollup(function(v) { return {
-
-            avg: d3.mean(v, function(d) { return d.value; })
-        }; })
-        .map(dataTmp);
-        console.log(expenses);
-
-
-        return data;
-    }
-
-    parseByWeek(data){
-        return data;
-    }
 }

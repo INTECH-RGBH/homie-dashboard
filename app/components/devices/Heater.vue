@@ -1,7 +1,7 @@
 <template>
   <node :hasActions="true" :nodeData="nodeData">
     <div slot="img">
-      <img v-if="nodeData.properties.degrees && nodeData.properties.degrees.value === '0'" src="../../assets/images/icons/heater/off.png" alt="" >
+      <img v-if="nodeData.properties.degrees && nodeData.properties.degrees.value === '0'" src="../../assets/images/icons/heater/heater_off.png" alt="" >
       <img v-else-if="nodeData.properties.degrees && nodeData.properties.degrees.value === '10'" src="../../assets/images/icons/heater/anti-freeze.png" alt="" >
       <img v-else-if="nodeData.properties.degrees && nodeData.properties.degrees.value === '15'" src="../../assets/images/icons/heater/night.png" alt="" >
       <img v-else-if="nodeData.properties.degrees && nodeData.properties.degrees.value === '20'" src="../../assets/images/icons/heater/comfort.png" alt="" >

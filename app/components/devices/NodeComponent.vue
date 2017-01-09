@@ -17,7 +17,8 @@
             </ul>
 
             <h2>Nom du nœud</h2>
-            <statistical :stat="getStats"></statistical>
+            
+            <statistical :nodeId="nodeData.id"></statistical>
            
             
             <h2>Tags</h2>
@@ -85,13 +86,6 @@ export default {
   computed: {
     ...mapState(['infrastructure'])
   },
-  asyncComputed: {
-    async getStats(){
-      const result = await this.giveStat()
-      
-      return result
-    }
-  },
   methods: {
     getWifiIconClasses (signal) {
       return {
@@ -116,13 +110,7 @@ export default {
         operationAdd
       })
     },
-    async giveStat()
-    {
-        const result = await this.giveStatAction({id: this.nodeData.id, interval: "day"})
-        return result
-        
-    },
-    ...mapActions({ toggleTagAction: 'toggleTag', giveStatAction: 'giveStat'})
+    ...mapActions({ toggleTagAction: 'toggleTag'})
   }
 }
 </script>
