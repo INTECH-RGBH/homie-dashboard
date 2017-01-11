@@ -6,6 +6,15 @@ import {bridgeInfrastructureToWebsocket} from './lib/bridges/infrastructure-webs
 import infrastructure from './lib/infrastructure/infrastructure'
 import {getInfrastructure} from './services/database'
 
+/* import bindings */
+
+import aqaraBinding from './bindings/aqara'
+import yeelightBinding from './bindings/yeelight'
+const BINDINGS = {
+  aqara: aqaraBinding,
+  yeelight: yeelightBinding
+}
+
 /* Register models */
 
 import './models/auth-token'
@@ -34,6 +43,16 @@ export default async function start ($deps) {
   /* Bridge the MQTT to the infrastructure */
 
   bridgeMqttToInfrastructure({ $deps, mqttClient, infrastructure })
+
+  /* start bindings */
+
+  for (const binding of Object.keys($deps.settings.bindings)) {
+    const settings = $deps.settings.bindings[binding]
+    if (!settings.enabled) continue
+
+    BINDINGS[binding](settings)
+    $deps.log.info(`${binding} binding started`)
+  }
 
   /* Handle WS */
 

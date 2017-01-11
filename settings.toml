@@ -1,6 +1,18 @@
 # Password securing your Homie Dashboard
 password = "abcd"
 
+# Enable bindings
+[bindings]
+
+  [bindings.aqara]
+    enabled = true
+
+    [bindings.aqara.gateway]
+      ip = '192.168.6.17'
+      key = '000000000000'
+  [bindings.yeelight]
+    enabled = true
+
 # Credentials to your MQTT broker
 [mqtt]
 host = "127.0.0.1"
