@@ -16,11 +16,6 @@
               <li>Firmware : {{ nodeData.device.fw.name }} (v{{ nodeData.device.fw.version }})</li>
             </ul>
 
-            <h2>Nom du nœud</h2>
-            
-            <statistical :nodeId="nodeData.id"></statistical>
-           
-            
             <h2>Tags</h2>
 
             <ul class="tag-list">
@@ -34,6 +29,24 @@
       </div>
     </div>
 
+    <div class="modal" :class="{ 'is-active': statsOpened }">
+      <div class="modal-background"></div>
+      <div class="modal-card">
+        <header class="modal-card-head">
+          <p class="modal-card-title">Statistiques du nœud <i>{{ nodeData.id }}</i> de l'objet <i>{{ nodeData.device.name }}</i></p>
+          <button @click.prevent="statsOpened = false" class="delete"></button>
+        </header>
+        <section class="modal-card-body">
+          <div class="content">
+            <statistical :nodeId="nodeData.id"></statistical>
+          </div>
+        </section>
+        <footer class="modal-card-foot">
+          <a @click="statsOpened = false" class="button is-primary">Fermer</a>
+        </footer>
+      </div>
+    </div>
+
     <div class="card">
       <header class="card-header">
         <p class="card-header-title">
@@ -41,12 +54,12 @@
             {{ nodeData.device.name }}
           </template>
         </p>
-        <span class="card-header-icon custom wifi" :class="getWifiIconClasses(nodeData.device.stats.signal)" :data-balloon="`Signal : ${nodeData.device.stats.signal}%`" data-balloon-pos="up">
+        <span class="card-header-icon custom wifi" :class="getSignalIconClasses(nodeData.device.online, nodeData.device.stats.signal)" :data-balloon="`${nodeData.device.online ? 'En ligne' : 'Hors-ligne'}, signal : ${nodeData.device.stats.signal}%`" data-balloon-pos="up">
           <i class="fa fa-wifi"></i>
         </span>
-        <span class="card-header-icon custom online" :class="getOnlineIconClasses(nodeData.device.online)" :data-balloon="`${nodeData.device.online ? 'En ligne' : 'Hors-ligne'}`" data-balloon-pos="up">
-          <i class="fa fa-circle"></i>
-        </span>
+        <a @click.prevent="statsOpened = true" class="card-header-icon charts">
+          <i class="fa fa-line-chart"></i>
+        </a>
         <a @click.prevent="settingsOpened = true" class="card-header-icon settings">
           <i class="fa fa-cog"></i>
         </a>
@@ -79,7 +92,8 @@ export default {
   props: ['nodeData', 'hasActions'],
   data () {
     return {
-      settingsOpened: false
+      settingsOpened: false,
+      statsOpened: false
     }
   },
   components: {Statistical},
@@ -87,17 +101,11 @@ export default {
     ...mapState(['infrastructure'])
   },
   methods: {
-    getWifiIconClasses (signal) {
+    getSignalIconClasses (online, signal) {
       return {
-        'is-weak': signal >= 0 && signal <= 33,
-        'is-normal': signal > 33 && signal <= 66,
-        'is-strong': signal > 66
-      }
-    },
-    getOnlineIconClasses (online) {
-      return {
-        'is-yes': online,
-        'is-no': !online
+        'is-offline': !online,
+        'is-weak': online && signal <= 66,
+        'is-strong': online && signal > 66
       }
     },
     async toggleTag (tag) {
@@ -110,7 +118,7 @@ export default {
         operationAdd
       })
     },
-    ...mapActions({ toggleTagAction: 'toggleTag'})
+    ...mapActions({ toggleTagAction: 'toggleTag' })
   }
 }
 </script>
@@ -121,8 +129,11 @@ export default {
   $green: #27ae60
   $gray: #363636
 
-  .card-header-icon.settings
+  .card-header-icon.settings, .card-header-icon.charts
     color: $gray
+
+  .card-header-icon.charts
+    padding-right: 0
 
   .card-header-icon.custom
     width: 20px
@@ -130,18 +141,12 @@ export default {
     cursor: default
 
     &.wifi
-      &.is-weak
+      &.is-offline
         color: $red
-      &.is-normal
+      &.is-weak
         color: $orange
       &.is-strong
         color: $green
-
-    &.online
-      &.is-yes
-        color: $green
-      &.is-no
-        color: $red
 
   ul.tag-list
     list-style-type: none
