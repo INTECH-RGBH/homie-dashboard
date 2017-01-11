@@ -50,7 +50,7 @@ export default async function start ($deps) {
     const settings = $deps.settings.bindings[binding]
     if (!settings.enabled) continue
 
-    BINDINGS[binding](settings)
+    BINDINGS[binding]({ settings, log: $deps.log, mqttClient })
     $deps.log.info(`${binding} binding started`)
   }
 
