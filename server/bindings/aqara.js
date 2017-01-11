@@ -28,6 +28,10 @@ export default function start (opts) {
   serverSocket.on('message', function (message) {
     message = JSON.parse(message.toString())
 
+    let sid = null
+    let type = null
+    let state = null
+    let mapped = null
     switch (message.cmd) {
       case 'heartbeat':
         break
@@ -38,11 +42,11 @@ export default function start (opts) {
         }
         break
       case 'read_ack':
-        let sid = message.sid
-        let type = message.model
-        let state = JSON.parse(message.data)
+        sid = message.sid
+        type = message.model
+        state = JSON.parse(message.data)
 
-        let mapped = mapToHomie({ sid, type, state })
+        mapped = mapToHomie({ sid, type, state })
 
         mqttClient.publish(`${BASE_TOPIC}/${mapped.deviceId}/$homie`, '2.0.0', qos1Retained)
         mqttClient.publish(`${BASE_TOPIC}/${mapped.deviceId}/$name`, mapped.deviceName, qos1Retained)
@@ -99,7 +103,7 @@ function mapToHomie (opts) {
         nodeType: 'door',
         nodeProperties: 'open'
       })
-      toReturn.properties.push({ id: 'open', value: state.status === 'open' ? '0' : '1' })
+      toReturn.properties.push({ id: 'open', value: state.status === 'open' ? '1' : '0' })
       break
     case 'switch':
       Object.assign(toReturn, {

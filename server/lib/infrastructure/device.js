@@ -91,7 +91,7 @@ export default class Device extends EventEmitter {
   }
   getStatProperty (property) { return this._stats.get(property) }
   setStatProperty (property, value) {
-    if (!property || !value || this._stats.get(property) === value) return
+    if (this._stats.get(property) === value) return
     this._stats.set(property, value)
     this._wasUpdated()
   }
