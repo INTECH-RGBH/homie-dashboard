@@ -6,6 +6,8 @@
 
 ## Contribute
 
+[![Greenkeeper badge](https://badges.greenkeeper.io/INTECH-RGB/homie-dashboard.svg)](https://greenkeeper.io/)
+
 * Install [Node.js](https://nodejs.org/en/) >= v7.0.0
 * Install [Yarn](https://yarnpkg.com/) (optional, recommended): `npm install -g yarn`
 * Clone this repository
