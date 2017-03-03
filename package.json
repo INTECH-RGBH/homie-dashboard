@@ -51,7 +51,7 @@
     "toml": "^2.3.0",
     "uuid": "^3.0.0",
     "ws": "^2.0.2",
-    "yargs": "^6.5.0",
+    "yargs": "^7.0.1",
     "yeelight-wifi": "^2.0.0"
   },
   "devDependencies": {
