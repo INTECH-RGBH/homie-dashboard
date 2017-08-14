@@ -63,7 +63,7 @@
     "babel-plugin-transform-es2015-modules-commonjs": "^6.18.0",
     "babel-plugin-transform-inline-environment-variables": "^6.8.0",
     "babel-watch": "^2.0.3",
-    "balloon-css": "^0.4.0",
+    "balloon-css": "^0.5.0",
     "bulma": "^0.3.0",
     "chart.js": "^2.4.0",
     "coveralls": "^2.11.15",
